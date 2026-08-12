@@ -56,6 +56,11 @@ jobs:
 
       # Un dépôt public expose son historique. Une valeur commitée puis corrigée
       # reste lisible dans le commit qui l'a introduite : contrôler HEAD ne suffit pas.
+      # Vérifie sur un dépôt jetable que le classement distingue bien une fuite
+      # corrigeable d'une publication déjà faite, avant de lui faire confiance.
+      - name: Vérifier le classement
+        run: node scripts/test-garde-fou-historique.mjs
+
       - name: Contrôler chaque commit
         run: node scripts/garde-fou-historique.mjs
         env:

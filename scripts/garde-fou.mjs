@@ -41,18 +41,20 @@ const RACINE = iRacine !== -1
 const VERBOSE = process.argv.includes('--verbose');
 
 /**
- * Deux fichiers sont exclus de la recherche de motifs en clair : le garde-fou
- * lui-même et son test. Ils énoncent le vocabulaire qu'ils interdisent
- * (« notaire », « succession »…) et se signaleraient à chaque passage.
+ * L'outillage du garde-fou est exclu de la recherche de motifs EN CLAIR : ces
+ * fichiers énoncent le vocabulaire qu'ils interdisent (« notaire », « succession »,
+ * un montant de démonstration…) et se signaleraient à chaque passage.
  *
- * L'exception ne couvre que les motifs en clair. Les empreintes, les noms de
- * fichiers, les tailles et l'EXIF leur restent appliqués — un vrai jeton
- * sensible glissé dans l'un de ces deux fichiers serait donc quand même
- * détecté. L'exclusion n'ouvre pas de trou.
+ * L'exception ne couvre que les motifs en clair. Les empreintes — celles des
+ * jetons comme celles des valeurs littérales — les noms de fichiers, les tailles
+ * et l'EXIF leur restent appliqués. Une vraie valeur privée glissée dans l'un de
+ * ces fichiers serait donc quand même détectée : l'exclusion n'ouvre pas de trou.
  */
 const EXCLUS_DES_MOTIFS = new Set([
   join('scripts', 'garde-fou.mjs'),
+  join('scripts', 'garde-fou-historique.mjs'),
   join('scripts', 'test-garde-fou.mjs'),
+  join('scripts', 'test-garde-fou-historique.mjs'),
 ]);
 
 // `.github` n'est volontairement pas ignoré : un workflow est un fichier comme
@@ -95,14 +97,15 @@ for (const paire of (process.env.GARDE_FOU_EMPREINTES_SUP ?? '').split(',').filt
  *
  * Aucune valeur présente dans les données privées ne doit se retrouver ici,
  * sauf celles que l'export a publiées par une décision explicite. Le dépôt privé
- * génère la liste, sous forme de HMAC : un simple hachage de « 160600 » se casse
- * par énumération en quelques millisecondes et reviendrait à publier le montant.
+ * génère la liste, sous forme de HMAC : un simple hachage d'un montant à six
+ * chiffres se casse par énumération en quelques millisecondes et reviendrait à
+ * publier le montant.
  *
  * Sans le sel, le contrôle ne peut pas s'exécuter — et dans ce cas il échoue au
  * lieu de passer. Un contrôle qu'on ne peut pas faire n'est pas un contrôle réussi.
  */
 const CHEMIN_EMPREINTES = join(RACINE, 'data', 'empreintes-interdites.json');
-const VERSION_EXTRACTEUR = 1;
+const VERSION_EXTRACTEUR = 2;
 
 let listeLitterales = null;
 let selHmac = process.env.GARDE_FOU_SEL ?? null;
@@ -132,7 +135,17 @@ if (existsSync(CHEMIN_EMPREINTES)) {
   }
 }
 
-const ENSEMBLE_LITTERALES = new Set(listeLitterales?.empreintes ?? []);
+/**
+ * Chaque empreinte porte la date à laquelle sa valeur est devenue privée, et
+ * parfois un marqueur `assume`. Le garde-fou ordinaire ne s'en sert pas pour
+ * décider — une valeur privée aujourd'hui est refusée aujourd'hui, quelle que
+ * soit son histoire. Il les transmet au rapport, où le contrôle d'historique en
+ * a besoin pour distinguer une fuite d'une publication déjà faite.
+ */
+const LITTERALES = new Map(
+  (listeLitterales?.empreintes ?? []).map((x) =>
+    typeof x === 'string' ? [x, {}] : [x.e, { depuis: x.depuis, assume: x.assume === true }]),
+);
 
 /** Motifs interdits dans tout fichier texte du dépôt public. */
 const MOTIFS = [
@@ -184,8 +197,8 @@ const FICHIERS_INTERDITS = [
 
 const violations = [];
 
-function signaler(fichier, regle, detail, extrait) {
-  violations.push({ fichier, regle, detail, extrait });
+function signaler(fichier, regle, detail, extrait, extra = {}) {
+  violations.push({ fichier, regle, detail, extrait, ...extra });
 }
 
 function* parcourir(dossier) {
@@ -268,12 +281,11 @@ function controlerEmpreintes(rel, texte) {
  * dans export/empreintes.mjs : les deux côtés doivent extraire à l'identique.
  */
 /**
- * Le nombre nu attrape un montant écrit sans symbole — « le véhicule coûte
- * 160600 ». Mais un entier de quatre chiffres est aussi une année, un numéro de
- * version ou un fragment d'URL : l'espace de noms SVG `.../2000/svg` a fait
- * remonter la provision d'imprévus du budget privé. On neutralise donc les URL
- * et les dates avant cette passe-là, et elle seule : les passes contextuelles
- * n'en ont pas besoin et ne doivent rien perdre.
+ * Le nombre nu attrape un montant écrit sans symbole monétaire. Mais un entier de
+ * quatre chiffres est aussi une année, un numéro de version ou un fragment d'URL :
+ * l'année figurant dans l'espace de noms SVG a fait remonter une ligne du budget
+ * privé. On neutralise donc les URL et les dates avant cette passe-là, et elle
+ * seule : les passes contextuelles n'en ont pas besoin et ne doivent rien perdre.
  */
 const sansUrlNiDate = (texte) =>
   texte
@@ -282,7 +294,11 @@ const sansUrlNiDate = (texte) =>
 
 const EXTRACTEURS = [
   { espace: 'monnaie', regex: /(\d[\d   .,]*\d|\d)\s*(?:€|EUR\b)/g, libelle: 'montant' },
-  { espace: 'monnaie', regex: /(?<![\d.,])(\d{4,})(?![\d.,])/g, libelle: 'montant', pretraitement: sansUrlNiDate },
+  // Le lookahead ne rejette que ce qui prolonge le nombre — un chiffre, ou un
+  // séparateur décimal suivi d'un chiffre. Rejeter tout point ou toute virgule
+  // laissait passer un montant suivi d'un point final ou d'une virgule, c'est-à-dire
+  // les deux façons les plus naturelles d'écrire un nombre dans une phrase.
+  { espace: 'monnaie', regex: /(?<![\d.,])(\d{4,})(?!\d|[.,]\d)/g, libelle: 'montant', pretraitement: sansUrlNiDate },
   { espace: 'masse', regex: /(\d[\d   .,]*\d|\d)\s*(?:kg|kilos?)\b/gi, libelle: 'masse détaillée' },
   { espace: 'coord', regex: /(-?\d+\.\d{3,})/g, libelle: 'coordonnée' },
   { espace: 'jeton', regex: /\b([A-Z0-9]{6,12})\b/g, libelle: 'identifiant', pretraitement: sansUrlNiDate },
@@ -291,7 +307,7 @@ const EXTRACTEURS = [
 const normaliser = (brut) => String(brut).replace(/[\s   ]/g, '').replace(',', '.').replace(/\.0+$/, '');
 
 function controlerLitterales(rel, texte) {
-  if (!ENSEMBLE_LITTERALES.size) return;
+  if (!LITTERALES.size) return;
   const seuils = listeLitterales.seuils ?? {};
 
   for (const { espace, regex, libelle, pretraitement } of EXTRACTEURS) {
@@ -307,11 +323,13 @@ function controlerLitterales(rel, texte) {
       if (seuil !== undefined && Math.abs(Number(valeur)) < seuil) continue;
 
       const emp = createHmac('sha256', selHmac).update(`${espace}:${valeur}`).digest('hex').slice(0, 16);
-      if (ENSEMBLE_LITTERALES.has(emp)) {
+      const connue = LITTERALES.get(emp);
+      if (connue) {
         signaler(rel, 'valeur-privee',
           `${libelle} présent dans les données privées et non publié par l'export. ` +
           'Soit la valeur n\'a rien à faire ici, soit elle doit passer par le contrat d\'export pour être publiée sciemment.',
-          `ligne ${ligneDe(source, m.index)} : ${m[0].trim()}`);
+          `ligne ${ligneDe(source, m.index)} : ${m[0].trim()}`,
+          { privee_depuis: connue.depuis, assume: connue.assume });
       }
     }
   }
@@ -477,10 +495,8 @@ for (const chemin of parcourir(RACINE)) {
   if (EXT_TEXTE.has(ext)) {
     const texte = readFileSync(chemin, 'utf8');
     controlerEmpreintes(rel, texte);
-    if (!EXCLUS_DES_MOTIFS.has(rel)) {
-      controlerMotifs(rel, texte);
-      controlerLitterales(rel, texte);
-    }
+    controlerLitterales(rel, texte);
+    if (!EXCLUS_DES_MOTIFS.has(rel)) controlerMotifs(rel, texte);
     if (ext === '.geojson') {
       controlerCoordonnees(rel, texte);
       controlerGeojsonSequence(rel, texte);
@@ -495,6 +511,13 @@ for (const chemin of parcourir(RACINE)) {
 }
 
 /* ------------------------------------------------------------------ rapport */
+
+// Sortie structurée pour le contrôle d'historique, qui a besoin des dates de mise
+// au privé pour classer chaque violation. Analyser du texte serait fragile.
+if (process.argv.includes('--json')) {
+  process.stdout.write(JSON.stringify({ inspectes, violations }));
+  process.exit(violations.length === 0 ? 0 : 1);
+}
 
 console.log(`\nGarde-fou — ${inspectes} fichiers inspectés.`);
 

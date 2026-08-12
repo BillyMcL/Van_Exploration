@@ -1,7 +1,9 @@
 {
   "_avertissement": "Empreintes HMAC-SHA256 des valeurs littérales qui ne doivent jamais apparaître dans le dépôt public. Généré par le dépôt privé. Inexploitable sans le sel, qui n'est pas versionné.",
   "_regeneration": "node export/empreintes.mjs, à relancer après toute modification des données privées ou de l'export.",
-  "version_extracteur": 1,
+  "_depuis": "Date à laquelle chaque valeur est devenue privée. Un commit antérieur qui la contient n'est pas une fuite à corriger mais une publication déjà faite : ce qui a été publié est publié, et le garde-fou n'annule pas le passé.",
+  "_assume": "true lorsque la publication antérieure a été explicitement assumée. N'autorise jamais la valeur dans l'état courant du dépôt — seulement dans les commits antérieurs à sa mise au privé.",
+  "version_extracteur": 2,
   "algorithme": "HMAC-SHA256, tronqué à 16 caractères hexadécimaux",
   "espaces": {
     "monnaie": 48,
@@ -14,63 +16,237 @@
   },
   "seuils_note": "En dessous de ces magnitudes, une valeur est trop banale pour être distinguée du bruit : la contrôler produirait des faux positifs jusqu'à ce que le garde-fou soit désactivé. Ces petites valeurs restent couvertes par les règles structurelles.",
   "empreintes": [
-    "09bfe34a862f65d2",
-    "0c2d69407e15d141",
-    "10b480e112503b97",
-    "136c426c967942c7",
-    "13dca1ccb0e56c34",
-    "176afa8890d4b9e6",
-    "18ee7ee34347a305",
-    "1ac1a330126ec8d6",
-    "1d8223a059d51e51",
-    "2268baaa42bb22ed",
-    "26dad085e575dc91",
-    "27b8d363a4cd7f96",
-    "2b77e4c0eb3fa27e",
-    "2ef5db7a3ddd533d",
-    "2fd9a0f1d5a0faf7",
-    "314d968d7b9d7b83",
-    "3ba8f0db768482a0",
-    "3d52cd54f1beb956",
-    "4e8e21567fc1048f",
-    "4fef82b24147b256",
-    "514aba081f9d2d7a",
-    "54ae5747939e2f4d",
-    "63162ebca7bb6b34",
-    "63202de79e486877",
-    "67607375f8538689",
-    "745feb48a51b8d2c",
-    "7514bde5d4d00698",
-    "7c7e40e2f89c1f8f",
-    "7e72a61c856d16e1",
-    "81f09730cfda32e4",
-    "82394fb7b58c970e",
-    "83d504751c4901aa",
-    "8c5fa45871958a08",
-    "8e83c07457d7ca5c",
-    "8f79f8e214e7bfc9",
-    "9198ba4f3050130c",
-    "96b93c009de4f337",
-    "9f8646f14a19e257",
-    "a0907244c8cb8c4b",
-    "a771b868b0ae3ef9",
-    "a89646d4b817fc31",
-    "a9a8f3eda9502834",
-    "c92f78c6d9800082",
-    "cb6fa57a08c2bad0",
-    "d203371053bf1bab",
-    "d423edc2e8ffae88",
-    "d67a346e1fb02c9c",
-    "d8ce75a2cf284655",
-    "e1a5f213f550ee3c",
-    "e62dc6ecb6cc1a4d",
-    "e81bebc31a372035",
-    "e92a6dfa142d414e",
-    "ef7ea634034eba9f",
-    "f045ce4f72f077b4",
-    "f73979001ba1e47d",
-    "f85ed7821b0fe24b",
-    "f91b95aff856e8a3",
-    "fa62370156a90a14"
+    {
+      "e": "09bfe34a862f65d2",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "0c2d69407e15d141",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "10b480e112503b97",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "136c426c967942c7",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "13dca1ccb0e56c34",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "176afa8890d4b9e6",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "18ee7ee34347a305",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "1ac1a330126ec8d6",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "1d8223a059d51e51",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "2268baaa42bb22ed",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "26dad085e575dc91",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "27b8d363a4cd7f96",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "2b77e4c0eb3fa27e",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "2ef5db7a3ddd533d",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "2fd9a0f1d5a0faf7",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "314d968d7b9d7b83",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "3ba8f0db768482a0",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "3d52cd54f1beb956",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "4e8e21567fc1048f",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "4fef82b24147b256",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "514aba081f9d2d7a",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "54ae5747939e2f4d",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "63162ebca7bb6b34",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "63202de79e486877",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "67607375f8538689",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "745feb48a51b8d2c",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "7514bde5d4d00698",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "7c7e40e2f89c1f8f",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "7e72a61c856d16e1",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "81f09730cfda32e4",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "82394fb7b58c970e",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "83d504751c4901aa",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "8c5fa45871958a08",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "8e83c07457d7ca5c",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "8f79f8e214e7bfc9",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "9198ba4f3050130c",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "96b93c009de4f337",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "9f8646f14a19e257",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "a0907244c8cb8c4b",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "a771b868b0ae3ef9",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "a89646d4b817fc31",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "a9a8f3eda9502834",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "c92f78c6d9800082",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "cb6fa57a08c2bad0",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "d203371053bf1bab",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "d423edc2e8ffae88",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "d67a346e1fb02c9c",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "d8ce75a2cf284655",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "e1a5f213f550ee3c",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "e62dc6ecb6cc1a4d",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "e81bebc31a372035",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "e92a6dfa142d414e",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "ef7ea634034eba9f",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "f045ce4f72f077b4",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "f73979001ba1e47d",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "f85ed7821b0fe24b",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "f91b95aff856e8a3",
+      "depuis": "2026-08-12"
+    },
+    {
+      "e": "fa62370156a90a14",
+      "depuis": "2026-08-12"
+    }
   ]
 }

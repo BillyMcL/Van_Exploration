@@ -33,13 +33,20 @@ const MASSE_PUBLIEE = '4242';
 const hmacTest = (espace, valeur) =>
   createHmac('sha256', SEL_TEST).update(`${espace}:${valeur}`).digest('hex').slice(0, 16);
 
-/** Liste d'empreintes telle que la produirait le dépôt privé. */
-function listeEmpreintes() {
+/**
+ * Liste d'empreintes telle que la produirait le dépôt privé. Chaque entrée porte
+ * la date à laquelle la valeur est devenue privée — c'est elle qui permet au
+ * contrôle d'historique de distinguer une fuite d'une publication déjà faite.
+ */
+function listeEmpreintes({ depuis = '2026-01-01', assume = false } = {}) {
   return JSON.stringify({
-    version_extracteur: 1,
+    version_extracteur: 2,
     algorithme: 'HMAC-SHA256, tronqué à 16 caractères hexadécimaux',
     seuils: { monnaie: 100, masse: 20 },
-    empreintes: [hmacTest('monnaie', MONTANT_TEST), hmacTest('masse', MASSE_TEST)],
+    empreintes: [
+      { e: hmacTest('monnaie', MONTANT_TEST), depuis, ...(assume ? { assume: true } : {}) },
+      { e: hmacTest('masse', MASSE_TEST), depuis },
+    ],
   }, null, 2);
 }
 
@@ -104,7 +111,7 @@ mkdirSync(join(fautif, 'media', 'astro'), { recursive: true });
 
 writeFileSync(join(fautif, 'docs', 'note-concession.md'), `# Note de rendez-vous
 
-Configuration retenue : ${JETON_SYNTHETIQUE}, annoncée à 160 600 € TTC hors remise.
+Configuration retenue : ${JETON_SYNTHETIQUE}, annoncée à 123 456 € TTC hors remise.
 Reprise proposée à 12 500 €, à confirmer.
 
 Voir le notaire avant signature — la succession en cours change le montage.
