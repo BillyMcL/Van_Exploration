@@ -1,0 +1,128 @@
+---
+import Base from '../layouts/Base.astro';
+import { vehicule, configurations, nombre } from '../lib/donnees';
+
+const d = vehicule.dimensions;
+const m = vehicule.masses;
+const c = vehicule.capacites;
+
+const fiche = [
+  ['Longueur hors tout', `${nombre(d.longueur_cm / 100)} m`],
+  ['Largeur', `${nombre(d.largeur_cm / 100)} m`],
+  ['Hauteur', `${nombre(d.hauteur_cm / 100)} m`],
+  ['Hauteur avec galerie et planche', `${nombre(d.hauteur_hors_tout_avec_galerie_et_planche_cm / 100)} m`],
+  ['Hauteur intérieure', `${d.hauteur_interieure_cm} cm`],
+  ['Empattement', `${nombre(d.empattement_mm / 1000)} m`],
+  ['Châssis', vehicule.base.chassis],
+  ['Motorisation', `${vehicule.base.puissance_ch} ch · ${vehicule.base.norme}`],
+  ['PTAC', `${nombre(m.ptac_kg)} kg`],
+  ['Masse en ordre de marche', `${nombre(m.masse_ordre_marche_declaree_kg)} kg (±${m.tolerance_legale_pct} %)`],
+  ['Charge de soute', `${m.charge_soute_kg} kg`],
+  ['Eau propre', `${c.eau_propre_l} l`],
+  ['Eaux usées', `${c.eaux_usees_l} l`],
+  ['Carburant', `${c.carburant_l} l + ${c.adblue_l} l AdBlue`],
+  ['Isolation plancher / parois / toit', `${vehicule.isolation_mm.plancher} / ${vehicule.isolation_mm.parois} / ${vehicule.isolation_mm.toit} mm`],
+  ['Salle d\'eau', `${vehicule.amenagement.salle_eau_cm} cm, douche séparée ${vehicule.amenagement.douche_separee_cm} cm`],
+  ['Couchages', `${vehicule.amenagement.couchages} — lit de pavillon ${vehicule.amenagement.lit_pavillon_cm} cm`],
+  ['Places assises homologuées', String(vehicule.amenagement.places_assises_homologuees)],
+];
+
+const ecartes = [
+  ['Fourgon', 'Pas de douche, de WC et de cuisine séparés. Un atelier suppose qu\'on puisse travailler pendant que quelqu\'un dort ou se lave.'],
+  ['Intégral', 'Le pare-brise panoramique est un apport thermique majeur. Incompatible avec deux chiens laissés à l\'arrêt et avec une forte sensibilité à la chaleur.'],
+  ['Capucine', 'Hauteur et classe tarifaire, pour un gain de couchage dont le projet n\'a pas l\'usage.'],
+];
+---
+
+<Base
+  titre="Le véhicule"
+  description="Un profilé de 7,39 m sur base Mercedes, choisi sur un seul critère décisif : la hauteur d'ouverture de sa soute."
+>
+  <h1>Un véhicule choisi sur la hauteur d'une trappe</h1>
+
+  <p class="chapo">
+    L'exigence de départ tenait en une phrase : embarquer une moto d'enduro à l'intérieur, dans un
+    véhicule assez court pour rester manœuvrable et assez lourd pour tout emporter. Elle a éliminé
+    la quasi-totalité du marché.
+  </p>
+
+  <div class="constat">
+    <p><strong>Le choix de ce modèle est provisoire.</strong></p>
+    <p class="note">{vehicule.statut_note}</p>
+  </div>
+
+  <h2>Le verrou du marché</h2>
+  <p>
+    Quatre marques ont été instruites en profondeur, neuf autres vérifiées sur le seul critère de
+    l'ouverture de soute. Aucun profilé ni capucine de moins de 7,20 m ne combine une ouverture
+    capable d'avaler une moto avec un poids total autorisé de 4,25 t sous la barre des prix visée.
+    Le segment « soute moto » a purement disparu du neuf : le dernier modèle explicitement conçu
+    pour cela était un intégral produit entre 2012 et 2019, sans successeur.
+  </p>
+  <p>
+    Ce qui fait gagner ce modèle : une trappe de soute de <strong>{vehicule.soute.trappe_hauteur_cm} cm
+    de haut</strong> sur {vehicule.soute.trappe_largeur_cm} cm de large — la plus grande ouverture du
+    segment, et la seule à laisser passer la moto. S'y ajoutent un PTAC de {nombre(m.ptac_kg)} kg, un
+    lit de pavillon qui sépare l'espace de nuit de celui des chiens, une douche séparée, la meilleure
+    isolation du comparatif et un châssis Mercedes.
+  </p>
+
+  <h2>Fiche technique</h2>
+  <p class="note">
+    Données constructeur. La configuration commerciale, les options retenues et le prix ne sont pas
+    publiés — ils relèvent du dossier privé.
+  </p>
+  <div class="defilable">
+    <table>
+      <tbody>
+        {fiche.map(([libelle, valeur]) => (
+          <tr><th scope="row">{libelle}</th><td>{valeur}</td></tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p class="note">
+    Au-delà de 3,5 t, les limitations de vitesse et la classe de péage changent :
+    {vehicule.exploitation.vitesse_max_autoroute_kmh} km/h sur autoroute,
+    {vehicule.exploitation.vitesse_max_route_kmh} km/h sur route, classe
+    {vehicule.exploitation.classe_peage} aux péages. Cela pèse sur les temps de trajet autant que
+    sur le budget.
+  </p>
+
+  <h2>Ce qui a été écarté</h2>
+  {ecartes.map(([type, raison]) => (
+    <section class="ecarte">
+      <h3>{type}</h3>
+      <p>{raison}</p>
+    </section>
+  ))}
+
+  <h2>Deux arbitrages imposés par le constructeur</h2>
+  <p>
+    <strong>Climatisation de toit ou lanterneau à extraction</strong> — les deux se disputent le même
+    emplacement. La climatisation l'emporte : elle est imposée par la sécurité des chiens à l'arrêt,
+    et c'est elle qui a dimensionné tout le système électrique. Un extracteur sera posé ailleurs en
+    après-vente.
+  </p>
+  <p>
+    <strong>Galerie de toit ou toit anti-grêle</strong> — incompatibles. La galerie l'emporte : elle
+    sert de plateforme d'astrophotographie et de support de planche. Le renoncement à la protection
+    anti-grêle est un risque accepté.
+  </p>
+
+  <p class="suite">
+    La charge utile réelle de ce véhicule n'est pas une donnée mais une hypothèse —
+    <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/poids`}>le calcul est ici</a>, et il
+    conditionne qui peut monter à bord.
+  </p>
+</Base>
+
+<style>
+  .ecarte { max-width: 46rem; }
+  .ecarte h3 { margin-bottom: 0.25rem; }
+  .ecarte p { margin-top: 0; }
+  .suite { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--trait); max-width: 46rem; }
+  table { max-width: 46rem; }
+  th[scope="row"] { font-weight: 400; color: var(--attenue); }
+  td { font-weight: 500; }
+</style>

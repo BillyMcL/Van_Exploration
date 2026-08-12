@@ -1,0 +1,89 @@
+---
+import Base from '../layouts/Base.astro';
+import { capacites, poids, nombre } from '../lib/donnees';
+
+const noms: Record<string, string> = {
+  energie: 'Système électrique',
+  vie_a_bord: 'Vie à bord',
+  mobilite: 'Moto et fixation',
+  production_images: 'Production d\'images',
+  chiens: 'Les deux chiens',
+  sports: 'Sports et bivouac',
+  eau: 'Eau embarquée',
+  structure: 'Galerie et échelle',
+  atelier: 'Outillage',
+};
+const maxKg = Math.max(...poids.categories.map((c) => c.kg));
+---
+
+<Base
+  titre="L'équipement"
+  description="Ce que l'atelier itinérant permet de faire, et la contrainte qui a commandé chaque choix. Des capacités, pas un inventaire."
+>
+  <h1>Un atelier, pas un coffre</h1>
+
+  <p class="chapo">
+    Le véhicule doit permettre de capturer, traiter et archiver en autonomie pendant plusieurs mois.
+    Chaque poste d'équipement répond à une contrainte précise — et plusieurs d'entre eux ont été
+    choisis pour ce qu'ils <em>évitent</em> autant que pour ce qu'ils permettent.
+  </p>
+
+  <div class="constat">
+    <p><strong>Cette page ne liste pas le matériel embarqué.</strong></p>
+    <p class="note">{capacites._pourquoi_pas_un_inventaire}</p>
+  </div>
+
+  <div class="grille">
+    {capacites.capacites.map((c) => (
+      <section class="capacite">
+        <h2>{c.titre}</h2>
+        <p class="resume">{c.resume}</p>
+        <p class="contrainte">{c.contrainte}</p>
+      </section>
+    ))}
+  </div>
+
+  <h2 class="apres">Ce que tout cela pèse</h2>
+  <p class="note">
+    {nombre(poids.total_kg)} kg au total en configuration de référence, par grande masse. Le détail
+    poste par poste n'est pas publié : il décrirait le contenu du véhicule.
+  </p>
+
+  <ul class="barres">
+    {poids.categories.map((c) => (
+      <li>
+        <span class="etiquette">{noms[c.categorie] ?? c.categorie}</span>
+        <span class="barre"><span style={`width:${(c.kg / maxKg) * 100}%`}></span></span>
+        <span class="valeur">{c.kg} kg</span>
+      </li>
+    ))}
+  </ul>
+
+  <p class="suite">
+    Ces kilos ne sont pas une curiosité : ils décident du nombre de personnes transportables.
+    <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/poids`}>Le calcul de charge utile</a>
+    en tire les conséquences.
+  </p>
+</Base>
+
+<style>
+  .grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1px; background: var(--trait); border: 1px solid var(--trait); margin: 2.5rem 0; }
+  .capacite { background: var(--fond); padding: 1.25rem 1.4rem 1.5rem; }
+  .capacite h2 { margin: 0 0 0.5rem; font-size: 1.05rem; }
+  .resume { margin: 0 0 0.75rem; }
+  .contrainte { margin: 0; font-size: 0.9rem; color: var(--attenue); }
+
+  .apres { margin-top: 3rem; }
+  .barres { list-style: none; padding: 0; margin: 1.25rem 0 0; }
+  .barres li { display: grid; grid-template-columns: 11rem 1fr 4rem; gap: 0.9rem; align-items: center; padding: 0.28rem 0; }
+  .etiquette { font-size: 0.9rem; }
+  .barre { background: var(--appui); height: 0.85rem; }
+  .barre > span { display: block; height: 100%; background: var(--encre); }
+  .valeur { text-align: right; font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+
+  .suite { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--trait); max-width: 46rem; }
+  @media (max-width: 34rem) {
+    .barres li { grid-template-columns: 1fr 3.5rem; }
+    .barre { grid-column: 1 / -1; }
+  }
+</style>

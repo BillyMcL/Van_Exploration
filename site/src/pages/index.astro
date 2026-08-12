@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { configurations, energie, paysTraverses, manifest, nombre } from '../lib/donnees';
+import { configurations, energie, paysTraverses, manifest, jalons, nombre } from '../lib/donnees';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const pireCas = configurations.scenarios.at(-1)!;
@@ -8,6 +8,21 @@ const contraint = energie.scenarios.reduce((pire, s) =>
   (s.production_kwh_jour.min - s.consommation_kwh_jour.max) < (pire.production_kwh_jour.min - pire.consommation_kwh_jour.max) ? s : pire);
 
 const entrees = [
+  {
+    href: `${base}/vehicule`,
+    titre: 'Le véhicule',
+    accroche: 'Un profilé de 7,39 m choisi sur un seul critère décisif : la hauteur d\'ouverture de sa soute. Le reste du marché n\'y passait pas.',
+  },
+  {
+    href: `${base}/equipement`,
+    titre: 'L\'équipement',
+    accroche: 'Ce que l\'atelier itinérant permet de faire, et la contrainte qui a dicté chaque choix. Des capacités, pas un inventaire.',
+  },
+  {
+    href: `${base}/avancement`,
+    titre: 'Où en est le projet',
+    accroche: `${jalons.compte.fait} jalons sur ${jalons.compte.total} sont derrière. Ce qui est arrêté, ce qui bloque, ce qui reste — sans calendrier.`,
+  },
   {
     href: `${base}/poids`,
     titre: 'Charge utile',

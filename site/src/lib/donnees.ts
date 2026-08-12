@@ -95,6 +95,17 @@ const configurationsSchema = z.object({
   })).nonempty(),
 });
 
+const jalonsSchema = z.object({
+  compte: z.object({ fait: z.number(), bloquant: z.number(), total: z.number() }),
+  jalons: z.array(z.object({
+    id: z.string(),
+    jalon: z.string(),
+    famille: z.string(),
+    statut: z.enum(['fait', 'provisoire', 'bloquant', 'a_faire']),
+    note: z.string(),
+  })).nonempty(),
+});
+
 const reglesSchema = z.object({
   regles: z.array(z.object({ id: z.string(), titre: z.string(), enonce: z.string() })).nonempty(),
 });
@@ -131,6 +142,7 @@ export const budget = charger('budget-repartition.json', budgetSchema);
 export const poids = charger('poids-categories.json', poidsSchema);
 export const configurations = charger('configurations.json', configurationsSchema);
 export const regles = charger('regles-exploitation.json', reglesSchema);
+export const jalons = charger('jalons.json', jalonsSchema);
 export const energie = charger('energie-scenarios.json', energieSchema);
 
 /**
@@ -139,7 +151,7 @@ export const energie = charger('energie-scenarios.json', energieSchema);
  * une donnée publiée que personne ne regarde.
  */
 const charges = new Set([
-  'budget-repartition.json', 'poids-categories.json',
+  'budget-repartition.json', 'poids-categories.json', 'jalons.json',
   'configurations.json', 'regles-exploitation.json', 'energie-scenarios.json',
 ]);
 const oublies = manifest.fichiers.filter((f) => !charges.has(f));
@@ -179,6 +191,32 @@ const paysTraversesSchema = z.object({
 }).passthrough();
 
 export const paysTraverses = charger('../pays-traverses.geojson', paysTraversesSchema);
+
+/* ------------------------------------------------- spécifications et capacités
+ *
+ * Saisies directement dans le dépôt public : elles ne dérivent d'aucune donnée
+ * privée. Les spécifications sont génériques — dimensions, PTAC, capacités — et
+ * ne portent ni configuration commerciale, ni prix, ni option retenue.
+ */
+export const vehicule = charger('../vehicule-specs.json', z.object({
+  modele: z.string(),
+  statut_choix: z.string(),
+  statut_note: z.string(),
+  dimensions: z.record(z.string(), z.number()),
+  base: z.object({ chassis: z.string(), puissance_ch: z.number(), puissance_kw: z.number(), norme: z.string() }),
+  masses: z.object({ ptac_kg: z.number(), masse_ordre_marche_declaree_kg: z.number(), tolerance_legale_pct: z.number(), charge_soute_kg: z.number(), note: z.string() }),
+  soute: z.object({ trappe_largeur_cm: z.number(), trappe_hauteur_cm: z.number(), note: z.string() }),
+  capacites: z.record(z.string(), z.number()),
+  isolation_mm: z.record(z.string(), z.number()),
+  amenagement: z.record(z.string(), z.union([z.string(), z.number(), z.array(z.string())])),
+  exploitation: z.object({ classe_peage: z.number(), vitesse_max_autoroute_kmh: z.number(), vitesse_max_route_kmh: z.number(), note: z.string() }),
+}).passthrough());
+
+export const capacites = charger('../capacites.json', z.object({
+  capacites: z.array(z.object({
+    id: z.string(), titre: z.string(), resume: z.string(), contrainte: z.string(),
+  })).nonempty(),
+}).passthrough());
 
 /**
  * L'ordre du tableau est lui-même une information. On impose l'ordre

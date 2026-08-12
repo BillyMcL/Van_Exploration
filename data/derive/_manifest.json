@@ -6,6 +6,7 @@
     "budget-repartition.json",
     "configurations.json",
     "energie-scenarios.json",
+    "jalons.json",
     "poids-categories.json",
     "regles-exploitation.json"
   ]

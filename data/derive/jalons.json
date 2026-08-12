@@ -1,0 +1,115 @@
+{
+  "_note": "Avancement par jalon, sans date ni échéance. Ce qui est fait, ce qui bloque, ce qui reste.",
+  "compte": {
+    "fait": 6,
+    "bloquant": 2,
+    "total": 15
+  },
+  "jalons": [
+    {
+      "id": "J-01",
+      "jalon": "Cahier des charges et critères de sélection",
+      "famille": "etude",
+      "statut": "fait",
+      "note": "Trois exigences structurantes — sécurité des chiens à l'arrêt"
+    },
+    {
+      "id": "J-02",
+      "jalon": "Comparatif des véhicules",
+      "famille": "etude",
+      "statut": "fait",
+      "note": "Quatre marques instruites en profondeur, neuf autres vérifiées sur le seul critère de l'ouverture de soute. Aucun profilé de moins de 7,20 m ne combine une soute capable d'avaler une moto avec un PTAC de 4,25 t."
+    },
+    {
+      "id": "J-04",
+      "jalon": "Configuration arrêtée",
+      "famille": "vehicule",
+      "statut": "fait",
+      "note": "Options retenues et incompatibilités constructeur tranchées. Climatisation contre lanterneau : la climatisation gagne. Galerie contre toit anti-grêle : la galerie gagne."
+    },
+    {
+      "id": "J-05",
+      "jalon": "Bilan de poids et configurations d'équipage",
+      "famille": "etude",
+      "statut": "fait",
+      "note": "Trois configurations croisées avec trois hypothèses de masse réelle. C'est ce calcul qui a fait apparaître la clause suspensive de masse."
+    },
+    {
+      "id": "J-06",
+      "jalon": "Dimensionnement du système électrique",
+      "famille": "etude",
+      "statut": "fait",
+      "note": "Architecture 24 V et modélisation saisonnière. L'hiver ibérique est la contrainte réelle."
+    },
+    {
+      "id": "J-14",
+      "jalon": "Dépôt public et vues de données",
+      "famille": "production",
+      "statut": "fait",
+      "note": "Site statique alimenté par des fichiers de données validés à la construction."
+    },
+    {
+      "id": "J-03",
+      "jalon": "Choix du modèle",
+      "famille": "vehicule",
+      "statut": "provisoire",
+      "note": "Retenu sur la hauteur de trappe de soute — la plus grande ouverture du segment. Reste suspendu à l'essai de chargement."
+    },
+    {
+      "id": "J-07",
+      "jalon": "Essai physique de chargement de la moto",
+      "famille": "vehicule",
+      "statut": "bloquant",
+      "note": "Le seul point du dossier qui n'ait pas été vérifié. Son échec rouvrirait le choix du véhicule."
+    },
+    {
+      "id": "J-08",
+      "jalon": "Relevé des charges par essieu et de la charge de toit",
+      "famille": "vehicule",
+      "statut": "bloquant",
+      "note": "Le dépassement de charge à l'essieu arrière précède celui du PTAC. Donnée à obtenir en concession."
+    },
+    {
+      "id": "J-09",
+      "jalon": "Commande du véhicule",
+      "famille": "vehicule",
+      "statut": "a_faire",
+      "note": "C'est le délai constructeur qui commande le calendrier — pas le permis."
+    },
+    {
+      "id": "J-10",
+      "jalon": "Permis C1",
+      "famille": "formation",
+      "statut": "a_faire",
+      "note": "Visite médicale agréée comprise."
+    },
+    {
+      "id": "J-11",
+      "jalon": "Couverture d'assurance adaptée au véhicule et à son usage",
+      "famille": "administratif",
+      "statut": "a_faire",
+      "note": "Un usage de ce type sort des contrats standards sur plusieurs points."
+    },
+    {
+      "id": "J-12",
+      "jalon": "Installation du système électrique",
+      "famille": "vehicule",
+      "statut": "a_faire",
+      "note": "Pose en après-vente. Plusieurs semaines d'attente puis plusieurs semaines d'atelier."
+    },
+    {
+      "id": "J-13",
+      "jalon": "Itinéraire détaillé",
+      "famille": "itineraire",
+      "statut": "a_faire",
+      "note": "Construit sous QGIS. Ne sera publié qu'en rétrospective."
+    },
+    {
+      "id": "J-15",
+      "jalon": "Chaîne de traitement des images",
+      "famille": "production",
+      "statut": "a_faire",
+      "note": "Suppression des métadonnées de position et génération des dérivés web avant toute galerie."
+    }
+  ]
+}

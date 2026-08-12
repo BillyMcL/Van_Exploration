@@ -1,0 +1,62 @@
+{
+  "_note": "Ce que l'atelier itinérant permet de faire, et la contrainte qui a commandé chaque choix. Saisi directement dans le dépôt public : ne dérive d'aucune donnée privée.",
+
+  "_pourquoi_pas_un_inventaire": "Ce n'est délibérément pas une liste de matériel. Un inventaire d'équipement embarqué, associé à un véhicule identifiable et à une position, est un catalogue pour cambrioleur — et le véhicule reste seul pendant les sorties à moto. On décrit donc des capacités et les raisons qui les ont dictées, jamais un contenu ni des valeurs.",
+
+  "capacites": [
+    {
+      "id": "documentation",
+      "titre": "Photographie documentaire",
+      "resume": "Boîtier plein format et optiques de reportage, traités à bord au format brut.",
+      "contrainte": "Produire un corpus sur plusieurs mois suppose de traiter et d'archiver en autonomie, pas d'accumuler des cartes jusqu'au retour. C'est ce qui impose un poste de travail réel à bord plutôt qu'un ordinateur d'appoint."
+    },
+    {
+      "id": "astro",
+      "titre": "Astrophotographie",
+      "resume": "Monture équatoriale à entraînement harmonique, sans contrepoids, et deux focales fixes très ouvertes — grand champ et champ serré.",
+      "contrainte": "Le choix d'une monture sans contrepoids est un choix de masse et d'encombrement avant d'être un choix optique. La galerie de toit sert de plateforme de mise en station, ce qui a fait renoncer au toit anti-grêle."
+    },
+    {
+      "id": "photogrammetrie",
+      "titre": "Photogrammétrie",
+      "resume": "Relevé de sites et de bâtiments par prises de vue multiples, reconstruits en modèles trois dimensions.",
+      "contrainte": "Les jeux de prises de vue et les modèles complets pèsent trop lourd pour un dépôt Git. Seuls des modèles allégés sont publiés ; les originaux vivent en stockage externe, référencés par manifeste. La publication de relevés de monuments dépend en outre du droit du pays de prise de vue, qui n'est pas uniforme en Europe."
+    },
+    {
+      "id": "aerien",
+      "titre": "Prises de vue aériennes",
+      "resume": "Aéronef de moins de 250 g, catégorie ouverte européenne.",
+      "contrainte": "Le passage sous les 250 g est un choix réglementaire délibéré, pas une contrainte de budget : il évite la formation pratique et élargit considérablement les situations de vol autorisées. Il ne dispense pas de l'enregistrement exploitant, l'appareil portant une caméra."
+    },
+    {
+      "id": "sous-marine",
+      "titre": "Image sous-marine",
+      "resume": "Caisson étanche, dôme grand-angle et éclairage sur bras articulés.",
+      "contrainte": "La bouteille n'est pas embarquée — location et gonflage en centre. Cela évite le transport d'un article sous pression et libère de la charge utile sur un poste où chaque kilo compte."
+    },
+    {
+      "id": "atelier",
+      "titre": "Poste de travail à bord",
+      "resume": "Retouche, modélisation trois dimensions et montage, sur écran large.",
+      "contrainte": "C'est le deuxième poste de consommation électrique après la climatisation. Il pèse directement sur le dimensionnement des batteries et sur la fenêtre de travail possible en hiver."
+    },
+    {
+      "id": "energie",
+      "titre": "Autonomie électrique",
+      "resume": "Architecture 24 V, batteries lithium-fer-phosphate, solaire en toiture, charge à l'alternateur et sur secteur.",
+      "contrainte": "Le 24 V n'est pas un raffinement : à 3 000 W d'onduleur, le 12 V imposerait 250 A de courant continu, avec des sections de câble et des pertes rédhibitoires. Le dimensionnement est commandé par la climatisation à l'arrêt, elle-même commandée par la sécurité des chiens."
+    },
+    {
+      "id": "reseau",
+      "titre": "Connexion",
+      "resume": "Routeur cellulaire bi-carte à bascule automatique, antenne de toit, liaison satellite activable au mois.",
+      "contrainte": "Le fair use européen plafonne l'itinérance à quatre mois. Sur une expédition plus longue, une carte locale devient nécessaire — ce qui contraint aussi le rythme de publication : on traite à bord et on ne pousse que des dérivés légers."
+    },
+    {
+      "id": "moto",
+      "titre": "Moyen secondaire",
+      "resume": "Moto d'enduro légère, transportée en soute, roue avant déposée et guidon pivoté.",
+      "contrainte": "Le camping-car parcourt la distance parce que les chiens sont dedans ; la moto sert à rayonner depuis un point d'ancrage. C'est ce besoin qui a éliminé la quasi-totalité du marché : la hauteur d'ouverture de soute est devenue le critère de sélection du véhicule."
+    }
+  ]
+}

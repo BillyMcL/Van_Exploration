@@ -1,0 +1,94 @@
+---
+import Base from '../layouts/Base.astro';
+import { jalons } from '../lib/donnees';
+
+const libelles: Record<string, string> = {
+  fait: 'Fait',
+  provisoire: 'Provisoire',
+  bloquant: 'Bloquant',
+  a_faire: 'À faire',
+};
+const groupes = ['fait', 'provisoire', 'bloquant', 'a_faire'] as const;
+const titres: Record<string, string> = {
+  fait: 'Ce qui est arrêté',
+  provisoire: 'Ce qui tient sous condition',
+  bloquant: 'Ce qui bloque',
+  a_faire: 'Ce qui reste',
+};
+---
+
+<Base
+  titre="Où en est le projet"
+  description="L'état d'avancement, jalon par jalon. Ce qui est arrêté, ce qui bloque, ce qui reste — sans calendrier."
+>
+  <h1>Où en est le projet</h1>
+
+  <p class="chapo">
+    {jalons.compte.fait} jalons sur {jalons.compte.total} sont derrière nous. Le dossier technique
+    est instruit ; ce qui reste est de l'ordre de la vérification physique, de l'engagement
+    contractuel et du délai.
+  </p>
+
+  <div class="constat">
+    <p><strong>Aucune date n'est publiée, et ce n'est pas un oubli.</strong></p>
+    <p class="note">
+      Un calendrier daté dit où sera le véhicule et quand le domicile sera vide. Le projet publie
+      des statuts, jamais des échéances — et l'itinéraire ne sera diffusé qu'après le passage.
+    </p>
+  </div>
+
+  {groupes.map((statut) => {
+    const liste = jalons.jalons.filter((j) => j.statut === statut);
+    if (!liste.length) return null;
+    return (
+      <section class="groupe">
+        <h2>{titres[statut]}</h2>
+        <ul class={`jalons ${statut}`}>
+          {liste.map((j) => (
+            <li>
+              <span class="marque">{libelles[j.statut]}</span>
+              <span class="corps">
+                <strong>{j.jalon}</strong>
+                {j.note && <span class="note-jalon">{j.note}</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  })}
+
+  <h2>Ce qui commande la suite</h2>
+  <p>
+    Un seul point du dossier n'a jamais été vérifié : la moto entre-t-elle réellement dans la soute,
+    chargée par une seule personne. Le plancher est à 60-70 cm du sol, l'accès est latéral, et la
+    moto sans roue avant ne roule plus. Tant que cet essai n'a pas eu lieu, le choix du véhicule
+    reste provisoire — et son échec le rouvrirait entièrement.
+  </p>
+  <p>
+    Vient ensuite le délai constructeur, qui se compte en mois et non en semaines. C'est lui qui
+    commande la date de départ, pas le permis ni l'aménagement — une correction apportée au dossier
+    initial, qui tenait le raisonnement inverse.
+  </p>
+</Base>
+
+<style>
+  .groupe { margin-top: 2.5rem; }
+  .jalons { list-style: none; padding: 0; margin: 0; }
+  .jalons li { display: grid; grid-template-columns: 6.5rem 1fr; gap: 1rem; padding: 0.7rem 0; border-top: 1px solid var(--trait); align-items: baseline; }
+  .marque { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--attenue); }
+  .corps { max-width: 46rem; }
+  .corps strong { display: block; font-weight: 600; }
+  .note-jalon { display: block; font-size: 0.9rem; color: var(--attenue); margin-top: 0.15rem; }
+
+  .jalons.fait .marque { color: var(--attenue); }
+  .jalons.provisoire .marque,
+  .jalons.provisoire li { border-top-color: var(--tension); }
+  .jalons.provisoire .marque { color: var(--tension); font-weight: 700; }
+  .jalons.bloquant li { border-top-color: var(--alerte); }
+  .jalons.bloquant .marque { color: var(--alerte); font-weight: 700; }
+
+  @media (max-width: 34rem) {
+    .jalons li { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+</style>

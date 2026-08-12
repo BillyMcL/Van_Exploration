@@ -14,9 +14,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const liens = [
   { href: `${base}/`, texte: 'Le projet' },
-  { href: `${base}/itineraire`, texte: 'Itinéraire' },
+  { href: `${base}/vehicule`, texte: 'Le véhicule' },
+  { href: `${base}/equipement`, texte: 'L\'équipement' },
+  { href: `${base}/avancement`, texte: 'Avancement' },
   { href: `${base}/poids`, texte: 'Charge utile' },
   { href: `${base}/energie`, texte: 'Énergie' },
+  { href: `${base}/itineraire`, texte: 'Itinéraire' },
   { href: `${base}/budget`, texte: 'Budget' },
 ];
 const courant = Astro.url.pathname.replace(/\/$/, '') || base;
