@@ -43,6 +43,7 @@ function listeEmpreintes({ depuis = '2026-01-01', assume = false } = {}) {
     version_extracteur: 2,
     algorithme: 'HMAC-SHA256, tronqué à 16 caractères hexadécimaux',
     seuils: { monnaie: 100, masse: 20 },
+    controle: hmacTest('controle', 'van-exploration'),
     empreintes: [
       { e: hmacTest('monnaie', MONTANT_TEST), depuis, ...(assume ? { assume: true } : {}) },
       { e: hmacTest('masse', MASSE_TEST), depuis },
@@ -210,6 +211,26 @@ if (r1b.status === 1 && /sel HMAC est introuvable/i.test(r1b.stdout + r1b.stderr
   echecs++;
 }
 rmSync(sansSel, { recursive: true, force: true });
+
+/* --------------------------------------------- cas 1 ter : sel présent mais faux */
+
+const mauvaisSel = mkdtempSync(join(tmpdir(), 'garde-fou-mauvais-sel-'));
+mkdirSync(join(mauvaisSel, 'data'), { recursive: true });
+writeFileSync(join(mauvaisSel, 'data', 'empreintes-interdites.json'), listeEmpreintes(), 'utf8');
+
+const r1c = lancerGardeFou(mauvaisSel, { sel: 'sel-different-de-celui-des-empreintes' });
+console.log('\nSel erroné — le contrôle doit se dénoncer, pas se taire :\n');
+{
+  const sortie = r1c.stdout + r1c.stderr;
+  const detecte = r1c.status === 1 && /ne correspond pas à la liste/i.test(sortie);
+  console.log(`  ${detecte ? '✓' : '✗'}  un sel qui ne correspond pas fait échouer le contrôle`);
+  if (!detecte) {
+    console.log('      Sans ce témoin, aucune empreinte ne correspond et le garde-fou');
+    console.log('      annonce « aucune fuite détectée » alors qu\'il ne compare plus rien.');
+    echecs++;
+  }
+}
+rmSync(mauvaisSel, { recursive: true, force: true });
 
 /* ------------------------------------------------------------------- cas 2 */
 

@@ -108,7 +108,9 @@ const CHEMIN_EMPREINTES = join(RACINE, 'data', 'empreintes-interdites.json');
 const VERSION_EXTRACTEUR = 2;
 
 let listeLitterales = null;
-let selHmac = process.env.GARDE_FOU_SEL ?? null;
+// Le sel est normalisé : un secret d'Actions collé depuis un fichier emporte
+// souvent son saut de ligne final, ce qui suffit à changer tous les HMAC.
+let selHmac = (process.env.GARDE_FOU_SEL ?? '').trim() || null;
 
 if (existsSync(CHEMIN_EMPREINTES)) {
   listeLitterales = JSON.parse(readFileSync(CHEMIN_EMPREINTES, 'utf8'));
@@ -124,6 +126,22 @@ if (existsSync(CHEMIN_EMPREINTES)) {
     console.error('Le contrôle des valeurs littérales ne peut pas s\'exécuter, donc rien n\'est publié.');
     console.error('En CI, déclarer le secret GARDE_FOU_SEL du dépôt.\n');
     process.exit(1);
+  }
+
+  // Témoin du sel. Un sel erroné ne fait correspondre aucune empreinte : sans ce
+  // contrôle, le garde-fou annoncerait « aucune fuite détectée » alors qu'il ne
+  // compare plus rien. Une protection qui échoue en silence est pire qu'une
+  // protection absente — celle-ci ferait au moins remarquer son absence.
+  if (listeLitterales.controle) {
+    const attendu = createHmac('sha256', selHmac).update('controle:van-exploration').digest('hex').slice(0, 16);
+    if (attendu !== listeLitterales.controle) {
+      console.error('\nLe sel HMAC ne correspond pas à la liste d\'empreintes.');
+      console.error('Aucune empreinte ne pourrait correspondre : le contrôle des valeurs littérales');
+      console.error('serait vide et annoncerait à tort un dépôt propre.');
+      console.error('\nVérifier le secret GARDE_FOU_SEL — une valeur tronquée, ou copiée avec le');
+      console.error('saut de ligne final du fichier export/.sel, suffit à tout invalider.\n');
+      process.exit(1);
+    }
   }
 
   if (listeLitterales.version_extracteur !== VERSION_EXTRACTEUR) {

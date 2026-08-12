@@ -5,6 +5,7 @@
   "_assume": "true lorsque la publication antérieure a été explicitement assumée. N'autorise jamais la valeur dans l'état courant du dépôt — seulement dans les commits antérieurs à sa mise au privé.",
   "version_extracteur": 2,
   "algorithme": "HMAC-SHA256, tronqué à 16 caractères hexadécimaux",
+  "controle": "cd73fd0a31653d15",
   "espaces": {
     "monnaie": 48,
     "masse": 7,

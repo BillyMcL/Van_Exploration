@@ -67,7 +67,7 @@ const git = (...args) => {
 
 /* ------------------------------------------------------------------- le sel */
 
-let sel = process.env.GARDE_FOU_SEL ?? null;
+let sel = (process.env.GARDE_FOU_SEL ?? '').trim() || null;
 if (!sel) {
   const voisin = join(ICI, '..', 'Van_Exploration-prive', 'export', '.sel');
   if (existsSync(voisin)) sel = readFileSync(voisin, 'utf8').trim();
