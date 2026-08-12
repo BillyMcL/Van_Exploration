@@ -28,6 +28,9 @@ const courant = Astro.url.pathname.replace(/\/$/, '') || base;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{titre} — {projet.nom}</title>
     <meta name="description" content={description} />
+    {/* Déclaré explicitement : sans cette balise, le navigateur va chercher
+        /favicon.ico à la racine du domaine, ce qui échoue sur des Pages de projet. */}
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
   </head>
   <body>
     <header>

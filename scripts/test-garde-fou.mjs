@@ -210,8 +210,18 @@ const propre = mkdtempSync(join(tmpdir(), 'garde-fou-propre-'));
 mkdirSync(join(propre, 'data', 'derive'), { recursive: true });
 mkdirSync(join(propre, 'media', 'astro'), { recursive: true });
 
+writeFileSync(join(propre, 'data', 'empreintes-interdites.json'), listeEmpreintes(), 'utf8');
 writeFileSync(join(propre, 'data', 'derive', 'poids-categories.json'),
   JSON.stringify({ categories: [{ categorie: 'energie', kg: 189 }] }, null, 2), 'utf8');
+
+// Régression : un entier de quatre chiffres est aussi une année, un numéro de
+// version ou un fragment d'URL. L'espace de noms SVG a déjà fait remonter une
+// ligne du budget privé. Ces trois formes doivent traverser sans bruit.
+writeFileSync(join(propre, 'favicon.svg'),
+  `<svg xmlns="http://www.w3.org/${MONTANT_TEST}/svg" viewBox="0 0 32 32"><path d="M2 19h27z"/></svg>`, 'utf8');
+writeFileSync(join(propre, 'notes.md'),
+  `Publié le ${MONTANT_TEST.slice(0, 4)}-01-14.\n` +
+  `Référence : https://exemple.org/dossier/${MONTANT_TEST}/piece\n`, 'utf8');
 writeFileSync(join(propre, 'data', 'itineraire-public.geojson'), JSON.stringify({
   type: 'FeatureCollection',
   features: [{

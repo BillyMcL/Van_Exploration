@@ -267,12 +267,25 @@ function controlerEmpreintes(rel, texte) {
  * Toute évolution de ces motifs impose d'incrémenter VERSION_EXTRACTEUR ici et
  * dans export/empreintes.mjs : les deux côtés doivent extraire à l'identique.
  */
+/**
+ * Le nombre nu attrape un montant écrit sans symbole — « le véhicule coûte
+ * 160600 ». Mais un entier de quatre chiffres est aussi une année, un numéro de
+ * version ou un fragment d'URL : l'espace de noms SVG `.../2000/svg` a fait
+ * remonter la provision d'imprévus du budget privé. On neutralise donc les URL
+ * et les dates avant cette passe-là, et elle seule : les passes contextuelles
+ * n'en ont pas besoin et ne doivent rien perdre.
+ */
+const sansUrlNiDate = (texte) =>
+  texte
+    .replace(/\b[a-z][a-z0-9+.-]*:\/\/\S+/gi, (m) => ' '.repeat(m.length))
+    .replace(/\b\d{4}-\d{2}-\d{2}(?:[T ][\d:.]+)?/g, (m) => ' '.repeat(m.length));
+
 const EXTRACTEURS = [
   { espace: 'monnaie', regex: /(\d[\d   .,]*\d|\d)\s*(?:€|EUR\b)/g, libelle: 'montant' },
-  { espace: 'monnaie', regex: /(?<![\d.,])(\d{4,})(?![\d.,])/g, libelle: 'montant' },
+  { espace: 'monnaie', regex: /(?<![\d.,])(\d{4,})(?![\d.,])/g, libelle: 'montant', pretraitement: sansUrlNiDate },
   { espace: 'masse', regex: /(\d[\d   .,]*\d|\d)\s*(?:kg|kilos?)\b/gi, libelle: 'masse détaillée' },
   { espace: 'coord', regex: /(-?\d+\.\d{3,})/g, libelle: 'coordonnée' },
-  { espace: 'jeton', regex: /\b([A-Z0-9]{6,12})\b/g, libelle: 'identifiant' },
+  { espace: 'jeton', regex: /\b([A-Z0-9]{6,12})\b/g, libelle: 'identifiant', pretraitement: sansUrlNiDate },
 ];
 
 const normaliser = (brut) => String(brut).replace(/[\s   ]/g, '').replace(',', '.').replace(/\.0+$/, '');
@@ -281,10 +294,13 @@ function controlerLitterales(rel, texte) {
   if (!ENSEMBLE_LITTERALES.size) return;
   const seuils = listeLitterales.seuils ?? {};
 
-  for (const { espace, regex, libelle } of EXTRACTEURS) {
+  for (const { espace, regex, libelle, pretraitement } of EXTRACTEURS) {
+    // Le prétraitement remplace par des espaces, jamais par une chaîne plus
+    // courte : les positions sont conservées, donc les numéros de ligne aussi.
+    const source = pretraitement ? pretraitement(texte) : texte;
     regex.lastIndex = 0;
     let m;
-    while ((m = regex.exec(texte)) !== null) {
+    while ((m = regex.exec(source)) !== null) {
       const valeur = normaliser(m[1]);
       if (valeur === '' || valeur === '0') continue;
       const seuil = seuils[espace];
@@ -295,7 +311,7 @@ function controlerLitterales(rel, texte) {
         signaler(rel, 'valeur-privee',
           `${libelle} présent dans les données privées et non publié par l'export. ` +
           'Soit la valeur n\'a rien à faire ici, soit elle doit passer par le contrat d\'export pour être publiée sciemment.',
-          `ligne ${ligneDe(texte, m.index)} : ${m[0].trim()}`);
+          `ligne ${ligneDe(source, m.index)} : ${m[0].trim()}`);
       }
     }
   }

@@ -40,9 +40,30 @@ jobs:
         env:
           GARDE_FOU_SEL: ${{ secrets.GARDE_FOU_SEL }}
 
+  historique:
+    name: Garde-fou sur l'historique
+    runs-on: ubuntu-latest
+    steps:
+      # fetch-depth: 0 est indispensable — le checkout par défaut est superficiel
+      # et ne ramène qu'un commit, ce qui ferait passer ce contrôle pour vert
+      # alors qu'il n'aurait rien inspecté.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      # Un dépôt public expose son historique. Une valeur commitée puis corrigée
+      # reste lisible dans le commit qui l'a introduite : contrôler HEAD ne suffit pas.
+      - name: Contrôler chaque commit
+        run: node scripts/garde-fou-historique.mjs
+        env:
+          GARDE_FOU_SEL: ${{ secrets.GARDE_FOU_SEL }}
+
   build:
     name: Construction du site
-    needs: garde-fou
+    needs: [garde-fou, historique]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
