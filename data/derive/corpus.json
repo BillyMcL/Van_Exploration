@@ -1,0 +1,46 @@
+{
+  "_note": "Vue publique de l'index du corpus. Les séries non publiées ne sont comptées qu'en volume : leur lieu et leurs dates restent privés jusqu'à publication explicite.",
+  "total": {
+    "series": 0,
+    "fichiers": 0,
+    "volume_go": 0,
+    "publiees": 0
+  },
+  "familles": [
+    {
+      "famille": "documentation",
+      "series": 0,
+      "fichiers": 0,
+      "volume_go": 0,
+      "publiees": []
+    },
+    {
+      "famille": "astro",
+      "series": 0,
+      "fichiers": 0,
+      "volume_go": 0,
+      "publiees": []
+    },
+    {
+      "famille": "photogrammetrie",
+      "series": 0,
+      "fichiers": 0,
+      "volume_go": 0,
+      "publiees": []
+    },
+    {
+      "famille": "video",
+      "series": 0,
+      "fichiers": 0,
+      "volume_go": 0,
+      "publiees": []
+    },
+    {
+      "famille": "ecrits",
+      "series": 0,
+      "fichiers": 0,
+      "volume_go": 0,
+      "publiees": []
+    }
+  ]
+}

@@ -1,37 +1,72 @@
 ---
 /**
- * Carte des pays traversés.
+ * Carte des pays traversés et des lieux déjà quittés.
  *
- * Des marqueurs, jamais un tracé. Relier les points donnerait un ordre de
- * passage, donc un calendrier, donc la position future du véhicule. Le schéma de
- * `donnees.ts` refuse toute géométrie autre que Point : la contrainte casse le
- * build, elle ne repose pas sur la mémoire de celui qui édite le fichier.
+ * Deux couches, aucune ligne. Des marqueurs, jamais un tracé : relier les points
+ * donnerait un ordre de passage, donc un calendrier, donc la position future du
+ * véhicule. Le schéma de `donnees.ts` refuse toute géométrie autre que Point sur
+ * les deux couches — la contrainte casse le build, elle ne repose pas sur la
+ * mémoire de celui qui édite le fichier.
+ *
+ * La couche rétrospective est produite par l'export du dépôt privé, qui n'y fait
+ * entrer un lieu qu'une fois qu'on en est parti. Elle est vide tant que rien n'a
+ * été parcouru, et c'est l'état normal avant le départ : la carte le dit plutôt
+ * que de faire semblant.
  *
  * Les données sont sérialisées au build dans une balise JSON et relues côté
- * client. Sans JavaScript, la liste des pays reste lisible dans le `noscript`.
+ * client. Sans JavaScript, la liste reste lisible dans le `noscript`.
  */
-import { paysTraverses } from '../lib/donnees';
+import { paysTraverses, itineraire } from '../lib/donnees';
 
 const pays = paysTraverses.features.map((f) => ({
   nom: f.properties.pays,
   coord: f.geometry.coordinates,
 }));
+
+const etapes = itineraire.features.map((f) => ({
+  nom: f.properties.nom,
+  pays: f.properties.pays,
+  pratiques: f.properties.pratiques,
+  coord: f.geometry.coordinates,
+}));
+
+const donnees = { pays, etapes };
 ---
 
 <figure class="carte">
-  <div id="carte" role="img" aria-label={`Carte des ${pays.length} pays traversés`}></div>
+  <div
+    id="carte"
+    role="img"
+    aria-label={etapes.length
+      ? `Carte des ${pays.length} pays traversés et des ${etapes.length} lieux déjà quittés`
+      : `Carte des ${pays.length} pays traversés`}
+  ></div>
 
-  <script type="application/json" id="donnees-carte" set:html={JSON.stringify(pays)}></script>
+  <script type="application/json" id="donnees-carte" set:html={JSON.stringify(donnees)}></script>
 
   <noscript>
     <ul class="carte-repli">
       {pays.map((p) => <li>{p.nom}</li>)}
     </ul>
+    {etapes.length > 0 && (
+      <ul class="carte-repli">
+        {etapes.map((e) => <li>{e.nom}</li>)}
+      </ul>
+    )}
   </noscript>
 
   <figcaption>
-    Pays traversés — <strong>ordre et dates non publiés</strong>.
-    L'itinéraire détaillé n'est diffusé qu'en rétrospective, après le passage.
+    {etapes.length > 0 ? (
+      <>
+        Pays traversés, et {etapes.length} lieu{etapes.length > 1 ? 'x' : ''} déjà quitté{etapes.length > 1 ? 's' : ''} —
+        <strong>ordre et dates non publiés</strong>. Un lieu n'apparaît qu'après le départ.
+      </>
+    ) : (
+      <>
+        Pays traversés — <strong>ordre et dates non publiés</strong>.
+        Aucun lieu n'est encore publié : l'itinéraire ne se remplit qu'en rétrospective, après le passage.
+      </>
+    )}
   </figcaption>
 </figure>
 
@@ -40,6 +75,7 @@ const pays = paysTraverses.features.map((f) => ({
   #carte { height: 32rem; border: 1px solid currentColor; }
   figcaption { margin-top: 0.75rem; font-size: 0.9rem; opacity: 0.8; }
   .carte-repli { columns: 3; margin: 0; padding-left: 1.2rem; }
+  .carte-repli + .carte-repli { margin-top: 0.75rem; }
   @media (max-width: 40rem) {
     #carte { height: 24rem; }
     .carte-repli { columns: 2; }
@@ -51,34 +87,54 @@ const pays = paysTraverses.features.map((f) => ({
   import 'leaflet/dist/leaflet.css';
 
   type Pays = { nom: string; coord: [number, number] };
+  type Etape = { nom: string; pays: string; pratiques: string[]; coord: [number, number] };
 
   const brut = document.getElementById('donnees-carte')?.textContent;
   const conteneur = document.getElementById('carte');
   if (brut && conteneur) {
-    const pays: Pays[] = JSON.parse(brut);
+    const { pays, etapes }: { pays: Pays[]; etapes: Etape[] } = JSON.parse(brut);
 
     const carte = L.map(conteneur, { scrollWheelZoom: false });
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 8,
+      maxZoom: 10,
       attribution: '&copy; contributeurs <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(carte);
 
     // Marqueurs vectoriels : pas d'image à charger, donc pas d'icône cassée par
     // le bundler, et le rendu suit la couleur du texte en thème clair ou sombre.
-    const points = pays.map(({ nom, coord: [lon, lat] }) =>
+    // Les pays restent des cercles évidés — ils situent une région, ils ne
+    // marquent pas un lieu. Les lieux quittés sont pleins et plus petits : la
+    // différence de traitement dit celle du statut.
+    const marqueurs = pays.map(({ nom, coord: [lon, lat] }) =>
       L.circleMarker([lat, lon], {
         radius: 9,
         weight: 2,
         color: 'currentColor',
-        fillOpacity: 0.25,
+        fillOpacity: 0.15,
       })
         .bindTooltip(nom, { permanent: false, direction: 'top' })
         .addTo(carte),
     );
 
+    for (const { nom, pratiques, coord: [lon, lat] } of etapes) {
+      marqueurs.push(
+        L.circleMarker([lat, lon], {
+          radius: 5,
+          weight: 1,
+          color: 'currentColor',
+          fillOpacity: 0.85,
+        })
+          .bindTooltip(pratiques.length ? `${nom} — ${pratiques.join(', ')}` : nom, {
+            permanent: false,
+            direction: 'top',
+          })
+          .addTo(carte),
+      );
+    }
+
     // Aucun L.polyline ici, et il ne doit jamais y en avoir : voir le
     // commentaire d'en-tête et le schéma dans src/lib/donnees.ts.
-    carte.fitBounds(L.featureGroup(points).getBounds(), { padding: [40, 40] });
+    carte.fitBounds(L.featureGroup(marqueurs).getBounds(), { padding: [40, 40] });
   }
 </script>

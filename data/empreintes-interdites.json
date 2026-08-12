@@ -7,7 +7,7 @@
   "algorithme": "HMAC-SHA256, tronqué à 16 caractères hexadécimaux",
   "controle": "cd73fd0a31653d15",
   "espaces": {
-    "monnaie": 48,
+    "monnaie": 47,
     "masse": 6,
     "jeton": 3
   },
@@ -225,10 +225,6 @@
     },
     {
       "e": "ef7ea634034eba9f",
-      "depuis": "2026-08-12"
-    },
-    {
-      "e": "f045ce4f72f077b4",
       "depuis": "2026-08-12"
     },
     {

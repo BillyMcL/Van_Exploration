@@ -1,9 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
 import Carte from '../components/Carte.astro';
-import { paysTraverses } from '../lib/donnees';
+import { paysTraverses, itineraire } from '../lib/donnees';
 
 const pays = paysTraverses.features.map((f) => f.properties.pays);
+const quittes = itineraire.features.length;
 ---
 
 <Base
@@ -41,5 +42,30 @@ const pays = paysTraverses.features.map((f) => f.properties.pays);
     Le contrôle qui garde ce dépôt refuse aussi tout fichier cartographique portant un attribut
     de date, d'ordre ou de séquence. Un ordre implique un calendrier, et la règle du décalage ne
     voyait pas cette voie-là.
+  </p>
+
+  <h2>Ce que la carte contient aujourd'hui</h2>
+  <p>
+    {quittes === 0 ? (
+      <>
+        <strong>Aucun lieu, pour l'instant.</strong> La couche rétrospective existe, elle est
+        vide, et c'est son état normal avant le départ : un itinéraire publié après coup commence
+        forcément par ne rien contenir. Ce qui compte est que la voie soit construite et
+        éprouvée maintenant plutôt qu'improvisée en route, quand une erreur ne se rattrape plus.
+      </>
+    ) : (
+      <>
+        <strong>{quittes} lieu{quittes > 1 ? 'x' : ''} déjà quitté{quittes > 1 ? 's' : ''}.</strong>{' '}
+        Chacun est entré sur cette carte parce qu'un programme a constaté qu'on en était parti,
+        pas parce qu'on a jugé le moment venu de le publier.
+      </>
+    )}
+  </p>
+  <p class="note">
+    L'itinéraire détaillé se construit dans le dépôt privé, sous forme de zones d'ancrage —
+    des lieux où le véhicule se pose une à trois semaines, et d'où la moto rayonne. Cet
+    itinéraire n'a pas de dates : la date de départ dépend d'une livraison qui dépend d'une
+    commande qui n'est pas passée. Il est donc indexé sur les saisons, ce qui a l'avantage
+    accessoire de ne constituer aucun calendrier à protéger.
   </p>
 </Base>

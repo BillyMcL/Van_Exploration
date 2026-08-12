@@ -57,13 +57,26 @@ verifier(rendus.join('|') === attendu.join('|'),
 
 const charge = html.match(/id="donnees-carte"[^>]*>([\s\S]*?)<\/script>/i)?.[1];
 let ordreClient = [];
+let etapesClient = [];
 try {
-  ordreClient = JSON.parse(charge ?? '[]').map((p) => p.nom);
-} catch { /* laissé vide : l'assertion suivante le signalera */ }
+  const donnees = JSON.parse(charge ?? '{}');
+  ordreClient = (donnees.pays ?? []).map((p) => p.nom);
+  etapesClient = (donnees.etapes ?? []).map((e) => e.nom);
+} catch { /* laissé vide : les assertions suivantes le signaleront */ }
 
 verifier(ordreClient.join('|') === attendu.join('|'),
   'l\'ordre des données passées au client est le même',
   `client : ${ordreClient.join(', ') || '(illisible)'}`);
+
+// La couche rétrospective obéit à la même règle que les pays : l'ordre du
+// fichier ne doit rien apprendre. L'export la range alphabétiquement ; on le
+// vérifie sur ce qui est réellement servi, pas sur ce que l'export prétend faire.
+const etapesTriees = [...etapesClient].sort((a, b) => a.localeCompare(b, 'fr'));
+verifier(etapesClient.join('|') === etapesTriees.join('|'),
+  etapesClient.length
+    ? `les ${etapesClient.length} lieux quittés sont rangés alphabétiquement`
+    : 'aucun lieu publié — rien dont l\'ordre puisse trahir une séquence',
+  `rendu : ${etapesClient.join(', ')}`);
 
 /* ------------------------------------------------------- absence de tracé */
 

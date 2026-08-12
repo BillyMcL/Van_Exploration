@@ -110,6 +110,33 @@ const reglesSchema = z.object({
   regles: z.array(z.object({ id: z.string(), titre: z.string(), enonce: z.string() })).nonempty(),
 });
 
+/**
+ * Corpus. L'index complet est privé — il porte le lieu et les dates de chaque
+ * série, y compris de celles qu'on n'a pas encore quittées. Ne sortent que les
+ * séries explicitement publiées ; les autres ne sont comptées qu'en volume.
+ */
+const corpusSchema = z.object({
+  total: z.object({
+    series: z.number().int().nonnegative(),
+    fichiers: z.number().int().nonnegative(),
+    volume_go: z.number().nonnegative(),
+    publiees: z.number().int().nonnegative(),
+  }),
+  familles: z.array(z.object({
+    famille: z.string(),
+    series: z.number().int().nonnegative(),
+    fichiers: z.number().int().nonnegative(),
+    volume_go: z.number().nonnegative(),
+    publiees: z.array(z.object({
+      serie: z.string(),
+      etape: z.string(),
+      pays: z.string(),
+      legende: z.string(),
+      nb_fichiers: z.number().int().nonnegative(),
+    })),
+  })).nonempty(),
+});
+
 const energieSchema = z.object({
   capacite_utile_kwh: z.number().positive(),
   puissance_solaire_wc: z.number().positive(),
@@ -144,6 +171,7 @@ export const configurations = charger('configurations.json', configurationsSchem
 export const regles = charger('regles-exploitation.json', reglesSchema);
 export const jalons = charger('jalons.json', jalonsSchema);
 export const energie = charger('energie-scenarios.json', energieSchema);
+export const corpus = charger('corpus.json', corpusSchema);
 
 /**
  * Cohérence croisée : le manifeste annonce des fichiers, ils doivent tous être
@@ -153,6 +181,7 @@ export const energie = charger('energie-scenarios.json', energieSchema);
 const charges = new Set([
   'budget-repartition.json', 'poids-categories.json', 'jalons.json',
   'configurations.json', 'regles-exploitation.json', 'energie-scenarios.json',
+  'itineraire-public.geojson', 'corpus.json',
 ]);
 const oublies = manifest.fichiers.filter((f) => !charges.has(f));
 if (oublies.length) {
@@ -191,6 +220,64 @@ const paysTraversesSchema = z.object({
 }).passthrough();
 
 export const paysTraverses = charger('../pays-traverses.geojson', paysTraversesSchema);
+
+/* --------------------------------------------- itinéraire, en rétrospective
+ *
+ * Produit par l'export du dépôt privé, qui n'y fait entrer une entité qu'une
+ * fois qu'on l'a quittée. Le fichier est légitimement vide tant que rien n'a été
+ * parcouru : `nonempty()` serait ici un contresens, un itinéraire rétrospectif
+ * commence forcément par ne rien contenir.
+ *
+ * Les mêmes contraintes de forme que pour les pays traversés, pour les mêmes
+ * raisons, et deux de plus qui tiennent à ce que ce fichier-ci se remplit dans
+ * le temps : le rangement alphabétique, sans quoi l'ordre des entités
+ * restituerait la séquence du voyage, et le plafond de trois décimales, qui est
+ * la précision de publication convenue.
+ */
+const itineraireSchema = z.object({
+  type: z.literal('FeatureCollection'),
+  features: z.array(z.object({
+    type: z.literal('Feature'),
+    properties: z.object({
+      nom: z.string().min(1),
+      categorie: z.enum(['ancrage', 'transit', 'site']),
+      pays: z.string().length(2),
+      pratiques: z.array(z.string()),
+    }).strict(),
+    geometry: z.object({
+      type: z.literal('Point', {
+        errorMap: () => ({ message: 'seules des géométries Point sont admises — une LineString serait un ordre de passage' }),
+      }),
+      coordinates: z.tuple([z.number(), z.number()]),
+    }),
+  })),
+}).passthrough();
+
+export const itineraire = charger('itineraire-public.geojson', itineraireSchema);
+
+{
+  const noms = itineraire.features.map((f) => f.properties.nom);
+  const tries = [...noms].sort((a, b) => a.localeCompare(b, 'fr'));
+  if (noms.join('|') !== tries.join('|')) {
+    throw new Error(
+      `itineraire-public.geojson n'est pas rangé par ordre alphabétique.\n` +
+      `  Un fichier rempli au fil du voyage porterait la séquence dans l'ordre de ses entités.\n` +
+      `  Relancer l'export : node export/export.mjs depuis le dépôt privé.`,
+    );
+  }
+
+  for (const f of itineraire.features) {
+    for (const v of f.geometry.coordinates) {
+      if ((String(v).split('.')[1]?.length ?? 0) > 3) {
+        throw new Error(
+          `Coordonnée à plus de 3 décimales dans itineraire-public.geojson : ${v}\n` +
+          `  L'export arrondit à 3 décimales, soit environ 100 m. Une valeur plus précise\n` +
+          `  n'a pas pu passer par lui.`,
+        );
+      }
+    }
+  }
+}
 
 /* ------------------------------------------------- spécifications et capacités
  *

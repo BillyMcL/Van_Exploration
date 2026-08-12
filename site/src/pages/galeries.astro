@@ -1,0 +1,135 @@
+---
+import Base from '../layouts/Base.astro';
+import Galerie from '../components/Galerie.astro';
+import { corpus, nombre } from '../lib/donnees';
+
+const titres: Record<string, string> = {
+  documentation: 'Documentation',
+  astro: 'Astrophotographie',
+  photogrammetrie: 'Photogrammétrie',
+  video: 'Vidéo',
+  ecrits: 'Écrits et carnets',
+};
+
+const attentes: Record<string, string> = {
+  documentation: 'Photographie de terrain, par étape. Le fond du corpus.',
+  astro: 'Ciel profond et grand champ, produits en hiver ibérique et en mi-saison — les nuits blanches scandinaves rendent l\'exercice impraticable pendant la partie nordique.',
+  photogrammetrie: 'Relevés de sites et de bâtiments. Modèles allégés ici, jeux de prises de vue complets en stockage externe.',
+  video: 'Séquences de terrain. Les masters ne sont jamais versionnés ; seules des vignettes et des liens le sont.',
+  ecrits: 'Carnets et notes de terrain, saisis à bord.',
+};
+
+const demarre = corpus.total.series > 0;
+---
+
+<Base
+  titre="Galeries"
+  description="Le corpus produit par l'expédition : documentation, astrophotographie, photogrammétrie, vidéo et écrits. Le dépôt indexe le corpus sans le contenir."
+>
+  <h1>Le dépôt indexe le corpus, il ne le contient pas</h1>
+
+  <p class="chapo">
+    Une expédition de plusieurs mois produit des téraoctets. Un dépôt Git n'est pas fait pour ça, et
+    l'hébergement du site plafonne à un gigaoctet. Ce qui est publié ici n'est donc jamais un
+    original : ce sont des dérivés web, plafonnés à deux mégaoctets par fichier. Les fichiers de
+    prise de vue vivent sur des supports de terrain, référencés par un index.
+  </p>
+
+  <div class="constat">
+    <p><strong>Aucune image ne sort d'un boîtier sans passer par la chaîne de traitement.</strong></p>
+    <p class="note">
+      Chaque photographie porte les coordonnées du lieu de prise de vue dans ses métadonnées. Pour
+      une astrophotographie, ce lieu est le bivouac — l'endroit exact où le véhicule a passé la
+      nuit. La chaîne retire EXIF, XMP et IPTC, puis <strong>relit chaque fichier produit</strong> et
+      refuse d'écrire s'il en reste une trace. Le contrôle qui garde ce dépôt refuse à son tour toute
+      image porteuse d'une position. C'est la seule fuite qui passerait par un fichier binaire que
+      personne ne relit.
+    </p>
+  </div>
+
+  {demarre ? (
+    <p>
+      {nombre(corpus.total.series)} séries indexées, {nombre(corpus.total.fichiers)} fichiers,
+      {' '}{nombre(corpus.total.volume_go)} Go — dont {corpus.total.publiees} publiées.
+      Le lieu et les dates d'une série ne sortent qu'avec elle : une série non publiée n'est comptée
+      qu'en volume.
+    </p>
+  ) : (
+    <p>
+      <strong>Le corpus n'a pas commencé.</strong> Le départ n'a pas eu lieu, et rien n'a été
+      produit. Cette page décrit ce qui l'accueillera et par quelles conditions une image y arrive —
+      la mécanique est en place et vérifiée, elle attend son objet.
+    </p>
+  )}
+
+  {corpus.familles.map((f) => (
+    <section class="famille">
+      <h2>{titres[f.famille] ?? f.famille}</h2>
+      <p class="attente">{attentes[f.famille]}</p>
+
+      {f.series > 0 ? (
+        <p class="compte">
+          {f.series} série{f.series > 1 ? 's' : ''} · {nombre(f.fichiers)} fichiers ·
+          {' '}{nombre(f.volume_go)} Go · {f.publiees.length} publiée{f.publiees.length > 1 ? 's' : ''}
+        </p>
+      ) : (
+        <p class="compte vide">Rien d'indexé pour l'instant.</p>
+      )}
+
+      {f.publiees.map((s) => (
+        <div class="serie">
+          <h3>
+            {s.etape || s.serie}
+            {s.pays && <span class="pays">{s.pays}</span>}
+          </h3>
+          <Galerie famille={f.famille} serie={s.serie} legende={s.legende} />
+        </div>
+      ))}
+    </section>
+  ))}
+
+  <h2 class="apres">Comment une image arrive ici</h2>
+  <ol class="etapes">
+    <li>
+      <strong>Traitement à bord.</strong> Les originaux sont retenus sur les supports de terrain,
+      jamais versionnés. On traite sur place plutôt que d'accumuler jusqu'au retour — c'est ce qui
+      impose un poste de travail réel dans le véhicule.
+    </li>
+    <li>
+      <strong>Nettoyage et dérivés.</strong> La chaîne produit trois formats, retire toutes les
+      métadonnées, et relit ce qu'elle vient d'écrire. Un dérivé porteur d'une trace n'est pas
+      corrigé : il n'est pas écrit.
+    </li>
+    <li>
+      <strong>Indexation.</strong> La série entre dans un index privé avec son lieu, ses dates, son
+      support de stockage et l'empreinte de l'archive. Le dépôt sait ce qui existe sans le contenir.
+    </li>
+    <li>
+      <strong>Publication.</strong> Un acte explicite, jamais une valeur par défaut. C'est lui, et
+      lui seul, qui fait sortir la série et son lieu vers ce dépôt — et il n'intervient qu'une fois
+      l'endroit quitté.
+    </li>
+  </ol>
+
+  <p class="note">
+    Sur une connexion cellulaire soumise à un plafond d'itinérance de quatre mois, pousser des
+    originaux serait de toute façon impraticable. La contrainte technique et la règle de
+    confidentialité vont ici dans le même sens : on ne publie que du léger, et seulement après coup.
+  </p>
+</Base>
+
+<style>
+  .famille { margin-top: 3rem; border-top: 1px solid var(--trait); padding-top: 1.25rem; }
+  .famille h2 { margin-top: 0; }
+  .attente { max-width: 46rem; margin: 0 0 0.5rem; }
+  .compte { font-size: 0.85rem; color: var(--attenue); font-variant-numeric: tabular-nums; margin: 0; }
+  .compte.vide { font-style: italic; }
+
+  .serie { margin-top: 1.75rem; }
+  .serie h3 { margin: 0 0 0.25rem; display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: baseline; }
+  .pays { font-weight: 400; font-size: 0.85rem; color: var(--attenue); }
+
+  .apres { margin-top: 3.5rem; }
+  .etapes { max-width: 46rem; padding-left: 1.2rem; }
+  .etapes li { margin-bottom: 0.75rem; }
+</style>
