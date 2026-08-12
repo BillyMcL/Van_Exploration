@@ -1,0 +1,22 @@
+{
+  "name": "van-exploration-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Site statique du projet Van Exploration, publié sur GitHub Pages.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "verifier": "astro check"
+  },
+  "dependencies": {
+    "astro": "^5.14.1",
+    "leaflet": "^1.9.4",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.22"
+  }
+}

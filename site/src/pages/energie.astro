@@ -1,0 +1,147 @@
+---
+import Base from '../layouts/Base.astro';
+import { energie, nombre } from '../lib/donnees';
+
+/** Pire cas : on produit le minimum et on consomme le maximum. */
+const bilan = energie.scenarios.map((s) => ({
+  ...s,
+  deficitMax: +(s.production_kwh_jour.min - s.consommation_kwh_jour.max).toFixed(1),
+  deficitMin: +(s.production_kwh_jour.max - s.consommation_kwh_jour.min).toFixed(1),
+}));
+
+// Le scénario contraignant est déduit, pas désigné : si les hypothèses changent,
+// la page désignera le nouveau sans qu'on ait à la réécrire.
+const contraint = bilan.reduce((pire, s) => (s.deficitMax < pire.deficitMax ? s : pire));
+const echelle = Math.max(...bilan.flatMap((s) => [s.consommation_kwh_jour.max, s.production_kwh_jour.max]));
+
+const autonomieJours = (deficit: number) =>
+  deficit >= 0 ? null : Math.floor(energie.capacite_utile_kwh / Math.abs(deficit));
+const heuresDeRoute = (deficit: number) =>
+  deficit >= 0 ? null : Math.ceil(Math.abs(deficit) / energie.kwh_par_heure_de_route);
+
+const largeur = (v: number) => `${(v / echelle) * 100}%`;
+---
+
+<Base
+  titre="Énergie"
+  description="Le dimensionnement du système 24 V tient en été. La contrainte réelle est l'hiver ibérique, saison de départ et seule fenêtre d'astrophotographie."
+>
+  <h1>La contrainte n'est pas l'été, c'est l'hiver</h1>
+
+  <p class="chapo">
+    Un système de {nombre(energie.capacite_utile_kwh)} kWh utiles et {nombre(energie.puissance_solaire_wc)} Wc de
+    solaire absorbe sans difficulté la climatisation estivale pour laquelle il a été dimensionné.
+    Le point dur est ailleurs, et il est saisonnier.
+  </p>
+
+  <div class="constat">
+    <p>
+      <strong>
+        {contraint.zone}, {contraint.saison} : {nombre(contraint.production_kwh_jour.min)}
+        à {nombre(contraint.production_kwh_jour.max)} kWh produits par jour pour
+        {nombre(contraint.consommation_kwh_jour.min)} à {nombre(contraint.consommation_kwh_jour.max)} consommés.
+      </strong>
+    </p>
+    <p>
+      Le déficit atteint {nombre(Math.abs(contraint.deficitMax))} kWh par jour. Le tampon de
+      {nombre(energie.capacite_utile_kwh)} kWh donne alors {autonomieJours(contraint.deficitMax)} jours,
+      après quoi il faut {heuresDeRoute(contraint.deficitMax)} heures de route par jour de
+      stationnement — ou une prise.
+    </p>
+    <p class="note">
+      C'est aussi la saison du départ, et la seule fenêtre d'astrophotographie du voyage :
+      les nuits blanches scandinaves rendent l'exercice impraticable en été. Le corpus
+      astronomique se produit donc exactement quand l'énergie est la plus rare, et chaque
+      session ajoute la monture, le boîtier et les résistances anti-buée à un bilan déjà
+      déficitaire. L'arbitrage reste ouvert : groupe électrogène d'appoint, nuits branchées
+      pendant les sessions, ou rythme de deux à trois nuits d'observation suivies d'une
+      journée de roulage.
+    </p>
+  </div>
+
+  <h2>Consommation et production, par saison</h2>
+  <p class="note">
+    Fourchettes journalières en kWh. Les barres claires sont la production solaire,
+    les barres pleines la consommation. Quand la consommation dépasse, la réserve s'entame.
+  </p>
+
+  <ul class="scenarios">
+    {bilan.map((s) => (
+      <li class={s.id === contraint.id ? 'contraint' : ''}>
+        <h3>
+          {s.zone} <span class="saison">{s.saison}</span>
+          {s.id === contraint.id && <span class="marque">saison contraignante</span>}
+        </h3>
+
+        <div class="paire">
+          <span class="role">Consommation</span>
+          <span class="piste">
+            <span class="segment conso" style={`margin-left:${largeur(s.consommation_kwh_jour.min)};width:${largeur(s.consommation_kwh_jour.max - s.consommation_kwh_jour.min)}`}></span>
+          </span>
+          <span class="chiffre">{nombre(s.consommation_kwh_jour.min)}–{nombre(s.consommation_kwh_jour.max)}</span>
+        </div>
+
+        <div class="paire">
+          <span class="role">Production</span>
+          <span class="piste">
+            <span class="segment prod" style={`margin-left:${largeur(s.production_kwh_jour.min)};width:${largeur(s.production_kwh_jour.max - s.production_kwh_jour.min)}`}></span>
+          </span>
+          <span class="chiffre">{nombre(s.production_kwh_jour.min)}–{nombre(s.production_kwh_jour.max)}</span>
+        </div>
+
+        <p class="verdict">
+          {s.deficitMax >= 0
+            ? <>Excédentaire même au pire cas.</>
+            : s.deficitMin >= 0
+              ? <>À l'équilibre dans le meilleur cas, déficitaire de {nombre(Math.abs(s.deficitMax))} kWh/j au pire — absorbé par le tampon et le roulage.</>
+              : <><strong>Déficitaire dans tous les cas</strong> : {nombre(Math.abs(s.deficitMin))} à {nombre(Math.abs(s.deficitMax))} kWh/j. Autonomie de {autonomieJours(s.deficitMax)} à {autonomieJours(s.deficitMin)} jours sans appoint.</>}
+        </p>
+      </li>
+    ))}
+  </ul>
+
+  <h2>Ce que le dimensionnement fait, et ce qu'il ne fait pas</h2>
+  {energie.conclusions.map((c) => (
+    <section class="conclusion">
+      <h3>{c.titre}</h3>
+      <p>{c.enonce}</p>
+    </section>
+  ))}
+
+  <p class="note">
+    Une heure de route rend {nombre(energie.kwh_par_heure_de_route)} kWh par le chargeur d'alternateur.
+    C'est l'appoint qui porte l'hiver — pas le solaire.
+  </p>
+</Base>
+
+<style>
+  .scenarios { list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; gap: 1.75rem; }
+  .scenarios > li { border-top: 1px solid var(--trait); padding-top: 1rem; }
+  .scenarios > li.contraint { border-top: 2px solid var(--alerte); }
+
+  .scenarios h3 { margin: 0 0 0.75rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.6rem; }
+  .saison { font-weight: 400; color: var(--attenue); font-size: 0.9rem; }
+  .marque {
+    font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--alerte-encre); background: var(--alerte); padding: 0.1rem 0.45rem;
+  }
+
+  .paire { display: grid; grid-template-columns: 7.5rem 1fr 4.5rem; gap: 0.9rem; align-items: center; padding: 0.15rem 0; }
+  .role { font-size: 0.85rem; color: var(--attenue); }
+  .piste { background: var(--appui); height: 0.8rem; display: block; }
+  .segment { display: block; height: 100%; min-width: 2px; }
+  .segment.conso { background: var(--encre); }
+  .segment.prod { background: var(--attenue); opacity: 0.45; }
+  .chiffre { text-align: right; font-variant-numeric: tabular-nums; font-size: 0.85rem; }
+
+  .verdict { margin: 0.6rem 0 0; font-size: 0.92rem; max-width: 46rem; }
+  .contraint .verdict strong { color: var(--alerte); }
+
+  .conclusion { max-width: 46rem; }
+  .conclusion h3 { margin-bottom: 0.25rem; }
+  .conclusion p { margin-top: 0; }
+
+  @media (max-width: 34rem) {
+    .paire { grid-template-columns: 5.5rem 1fr 3.8rem; gap: 0.5rem; }
+  }
+</style>

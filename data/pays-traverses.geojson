@@ -1,0 +1,44 @@
+{
+  "type": "FeatureCollection",
+  "_note": "Pays traversés par le projet. Volontairement PAS un tracé : aucune géométrie de type LineString, aucun attribut d'ordre, aucune date. Une polyligne reliant ces points serait un planning déguisé — l'ordre implique les dates, et les dates disent où sera le véhicule.",
+  "_rangement": "Les entités sont rangées alphabétiquement par pays. Ce rangement ne porte aucune information : il est là pour qu'aucune séquence ne puisse être déduite de la structure du fichier. Le build échoue si l'ordre alphabétique est rompu.",
+  "_precision": "Centroïdes nationaux à une décimale, soit environ 10 km. Aucune précision supérieure n'est publiée à ce stade du projet.",
+  "_source": "Saisi dans le dépôt public d'après l'intention générale du projet. Ne dérive d'aucune donnée privée et ne consomme rien de l'export.",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "pays": "Danemark", "code": "DK" },
+      "geometry": { "type": "Point", "coordinates": [10.0, 56.0] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pays": "Espagne", "code": "ES" },
+      "geometry": { "type": "Point", "coordinates": [-3.7, 40.2] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pays": "France", "code": "FR" },
+      "geometry": { "type": "Point", "coordinates": [2.4, 46.6] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pays": "Italie", "code": "IT" },
+      "geometry": { "type": "Point", "coordinates": [12.6, 42.8] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pays": "Norvège", "code": "NO" },
+      "geometry": { "type": "Point", "coordinates": [9.0, 62.0] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pays": "Portugal", "code": "PT" },
+      "geometry": { "type": "Point", "coordinates": [-8.0, 39.6] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pays": "Suède", "code": "SE" },
+      "geometry": { "type": "Point", "coordinates": [15.0, 62.2] }
+    }
+  ]
+}

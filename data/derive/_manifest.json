@@ -1,0 +1,12 @@
+{
+  "_avertissement": "Fichiers générés par export/export.mjs depuis le dépôt privé. Ne pas éditer à la main : la prochaine exécution écrasera toute modification, et une valeur saisie ici ne serait plus tracée à sa source.",
+  "version_contrat": 1,
+  "empreinte_sources": "6ba751a5f960877e",
+  "fichiers": [
+    "budget-repartition.json",
+    "configurations.json",
+    "energie-scenarios.json",
+    "poids-categories.json",
+    "regles-exploitation.json"
+  ]
+}

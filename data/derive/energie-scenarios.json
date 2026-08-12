@@ -1,0 +1,180 @@
+{
+  "_note": "Consommation et production agrégées par scénario saisonnier. Le détail par poste est conservé car il ne révèle rien du contenu du véhicule.",
+  "capacite_utile_kwh": 10.8,
+  "puissance_solaire_wc": 1200,
+  "kwh_par_heure_de_route": 0.6,
+  "scenarios": [
+    {
+      "id": "hiver-iberie",
+      "saison": "décembre-février",
+      "zone": "Espagne et Portugal",
+      "consommation_kwh_jour": {
+        "min": 4,
+        "max": 5.6
+      },
+      "production_kwh_jour": {
+        "min": 1.5,
+        "max": 2.5
+      },
+      "postes": [
+        {
+          "poste": "Base cellule",
+          "min": 1.6,
+          "max": 2.1
+        },
+        {
+          "poste": "Chauffage gazole — ventilation et pompe",
+          "min": 1,
+          "max": 1.4
+        },
+        {
+          "poste": "Poste de travail",
+          "min": 0.9,
+          "max": 1.2
+        },
+        {
+          "poste": "Recharge appareils",
+          "min": 0.3,
+          "max": 0.5
+        },
+        {
+          "poste": "Astrophotographie",
+          "min": 0.2,
+          "max": 0.4
+        }
+      ]
+    },
+    {
+      "id": "mi-saison-italie",
+      "saison": "mars-mai",
+      "zone": "Italie et sud de la France",
+      "consommation_kwh_jour": {
+        "min": 3.2,
+        "max": 4.7
+      },
+      "production_kwh_jour": {
+        "min": 3.5,
+        "max": 5
+      },
+      "postes": [
+        {
+          "poste": "Base cellule",
+          "min": 1.5,
+          "max": 2
+        },
+        {
+          "poste": "Chauffage gazole — ventilation et pompe",
+          "min": 0.3,
+          "max": 0.6
+        },
+        {
+          "poste": "Poste de travail",
+          "min": 0.9,
+          "max": 1.2
+        },
+        {
+          "poste": "Recharge appareils",
+          "min": 0.3,
+          "max": 0.5
+        },
+        {
+          "poste": "Astrophotographie",
+          "min": 0.2,
+          "max": 0.4
+        }
+      ]
+    },
+    {
+      "id": "ete-sud",
+      "saison": "juin-août",
+      "zone": "Sud de l'Europe",
+      "consommation_kwh_jour": {
+        "min": 5.3,
+        "max": 8
+      },
+      "production_kwh_jour": {
+        "min": 5,
+        "max": 7
+      },
+      "postes": [
+        {
+          "poste": "Climatisation à l'arrêt",
+          "min": 2.6,
+          "max": 4.3
+        },
+        {
+          "poste": "Base cellule",
+          "min": 1.5,
+          "max": 2
+        },
+        {
+          "poste": "Poste de travail",
+          "min": 0.9,
+          "max": 1.2
+        },
+        {
+          "poste": "Recharge appareils",
+          "min": 0.3,
+          "max": 0.5
+        }
+      ]
+    },
+    {
+      "id": "ete-scandinavie",
+      "saison": "juin-août",
+      "zone": "Scandinavie",
+      "consommation_kwh_jour": {
+        "min": 2.8,
+        "max": 4
+      },
+      "production_kwh_jour": {
+        "min": 5.5,
+        "max": 8
+      },
+      "postes": [
+        {
+          "poste": "Base cellule",
+          "min": 1.5,
+          "max": 2
+        },
+        {
+          "poste": "Poste de travail",
+          "min": 0.9,
+          "max": 1.2
+        },
+        {
+          "poste": "Recharge appareils",
+          "min": 0.3,
+          "max": 0.5
+        },
+        {
+          "poste": "Astrophotographie",
+          "min": 0.1,
+          "max": 0.3
+        }
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "id": "E-01",
+      "titre": "Le dimensionnement tient en été",
+      "enonce": "Environ 8 kWh/jour de consommation au pire cas estival contre 5 à 7 kWh de production solaire. Le déficit résiduel est absorbé par le tampon de 10,8 kWh utiles et par le roulage entre étapes."
+    },
+    {
+      "id": "E-02",
+      "titre": "La climatisation continue sur une journée entière n'est pas atteignable en autonomie solaire",
+      "enonce": "Le système est dimensionné pour trois à cinq heures de climatisation à l'arrêt. Au-delà, la consommation dépasse durablement la production et aucune taille de batterie raisonnable n'y répond. La réponse n'est pas électrique : c'est l'ombre, l'altitude, la ventilation traversante, ou le branchement au secteur. Le choix de l'emplacement de stationnement est un paramètre de sécurité pour les chiens, pas un paramètre de confort."
+    },
+    {
+      "id": "E-03",
+      "titre": "L'hiver est la saison contraignante, et c'est celle du départ",
+      "enonce": "En Ibérie de décembre à février, 1 200 Wc produisent 1,5 à 2,5 kWh/jour pour une consommation de 4 à 5,6 kWh — chauffage gazole compris, dont la soufflerie et la pompe tournent sur la batterie. Le déficit est de 1,5 à 4 kWh/jour. Le tampon donne trois à quatre jours ; au-delà il faut rouler deux à trois heures ou se brancher. Le solaire ne porte pas l'hiver."
+    },
+    {
+      "id": "E-04",
+      "titre": "L'astrophotographie est en concurrence saisonnière avec la Scandinavie",
+      "enonce": "Les nuits blanches d'été aux latitudes scandinaves rendent l'astrophotographie impraticable pendant la partie nordique du voyage. Le corpus astro se produit en hiver ibérique et en mi-saison italienne, c'est-à-dire pendant la période où l'énergie est la plus rare."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+# Normalisation
+* text=auto eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.geojson text eol=lf
+*.csv text eol=lf
+*.astro text eol=lf
+*.mjs text eol=lf
+*.ts text eol=lf
+*.yml text eol=lf
+
+# Pas de Git LFS dans le dépôt public, et c'est délibéré.
+#
+# Un fichier en LFS n'est pas résolu par le build Pages sans `lfs: true` au
+# checkout, ce qui consommerait le quota de bande passante à chaque publication.
+# Et Pages plafonne de toute façon le site publié à 1 Go.
+#
+# Ce dépôt ne contient donc que des blobs Git ordinaires et petits : dérivés web
+# à 2 Mo maximum par fichier, plafond appliqué par scripts/garde-fou.mjs.
+# Tout le reste est en stockage externe, indexé par media/*/manifest.csv.
+
+# Les binaires publiés restent traités comme tels par les diffs
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.webp binary
+*.avif binary
+*.glb binary
+*.pdf binary

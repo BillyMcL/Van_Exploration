@@ -1,0 +1,84 @@
+---
+import Base from '../layouts/Base.astro';
+import { budget } from '../lib/donnees';
+
+const libelles: Record<string, string> = {
+  production_images: 'Production d\'images',
+  sports: 'Sports et plongée',
+  equipement_personnel: 'Équipement personnel',
+  mobilite: 'Moto et fixation',
+  formation: 'Permis et formation',
+  energie_carburant: 'Carburant',
+  vie_courante: 'Vie courante',
+  assurances: 'Assurances',
+  hebergement_peages: 'Hébergement et péages',
+  vehicule_exploitation: 'Entretien du véhicule',
+  provisions: 'Provisions',
+  chiens: 'Les deux chiens',
+  telecom: 'Télécom',
+};
+
+const titres: Record<string, string> = {
+  acquisition: 'Équipement — dépense unique',
+  fonctionnement: 'Fonctionnement — sur neuf mois',
+};
+---
+
+<Base
+  titre="Budget"
+  description="Répartition du budget en pourcentages. Aucun montant n'est publié, et le poste véhicule est exclu de la répartition."
+>
+  <h1>Budget</h1>
+
+  <p class="chapo">
+    Le projet publie la <strong>structure</strong> de sa dépense, pas son montant. Ce qui se lit
+    ici, c'est où va l'argent les uns par rapport aux autres — pas combien.
+  </p>
+
+  <div class="constat">
+    <p><strong>Le poste véhicule est absent de ces répartitions, et c'est délibéré.</strong></p>
+    <p class="note">
+      Le modèle est nommé publiquement — c'est le cœur de la démarche et de son journal de
+      décisions — et son prix catalogue l'est aussi. Une répartition incluant le véhicule
+      permettrait de retrouver le total du projet par une simple division. Publier une part,
+      dans ce cas précis, revient à publier une somme. {budget.perimetre}
+    </p>
+  </div>
+
+  {Object.entries(budget.phases).map(([phase, categories]) => (
+    <section>
+      <h2>{titres[phase] ?? phase}</h2>
+      <ul class="barres">
+        {categories.map((c) => (
+          <li>
+            <span class="etiquette">{libelles[c.categorie] ?? c.categorie}</span>
+            <span class="barre"><span style={`width:${c.part_pct}%`}></span></span>
+            <span class="valeur">{c.part_pct} %</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <h2>Ce que ces chiffres valent</h2>
+  <p class="note">
+    Chaque ligne du budget source porte son niveau de confiance — devisé, relevé au catalogue
+    constructeur, ou estimé — et sa nature : investissement, dépense, provision. Cette
+    distinction est maintenue dans le dossier de travail parce qu'un budget qui compte
+    l'acquisition d'un véhicule et ignore sa décote confond un actif et une dépense.
+    Elle ne peut pas être restituée ici sans les montants qui lui donnent son sens.
+  </p>
+</Base>
+
+<style>
+  .barres { list-style: none; padding: 0; margin: 1.25rem 0 0; }
+  .barres li { display: grid; grid-template-columns: 12rem 1fr 3.5rem; gap: 0.9rem; align-items: center; padding: 0.3rem 0; }
+  .etiquette { font-size: 0.9rem; }
+  .barre { background: var(--appui); height: 0.85rem; }
+  .barre > span { display: block; height: 100%; background: var(--encre); }
+  .valeur { text-align: right; font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+  @media (max-width: 34rem) {
+    .barres li { grid-template-columns: 1fr 3.5rem; }
+    .barre { grid-column: 1 / -1; }
+  }
+</style>

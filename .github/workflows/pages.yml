@@ -1,0 +1,81 @@
+name: Publication
+
+# Le garde-fou est un préalable bloquant, pas un contrôle parallèle : aucune
+# construction ne démarre tant qu'il n'est pas vert, et rien n'atteint Pages
+# sans être passé par lui.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  garde-fou:
+    name: Garde-fou anti-fuite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      # Le test tourne avant le garde-fou : on vérifie que le contrôle mord
+      # avant de lui faire confiance pour dire que le dépôt est propre.
+      - name: Vérifier que le garde-fou mord
+        run: node scripts/test-garde-fou.mjs
+
+      # Sans ce secret, le contrôle des valeurs littérales ne peut pas s'exécuter
+      # et le garde-fou échoue plutôt que de laisser passer.
+      - name: Contrôler le dépôt
+        run: node scripts/garde-fou.mjs
+        env:
+          GARDE_FOU_SEL: ${{ secrets.GARDE_FOU_SEL }}
+
+  build:
+    name: Construction du site
+    needs: garde-fou
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - run: npm ci
+        working-directory: site
+
+      # Échoue si un fichier de data/derive/ ne respecte plus son schéma.
+      - run: npm run build
+        working-directory: site
+
+      # Le schéma garantit la forme du fichier source ; ce test garantit celle du
+      # rendu. L'ordre du DOM est une information au même titre que l'ordre du JSON.
+      - name: Vérifier le rendu
+        run: node scripts/test-rendu.mjs
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+  deploy:
+    name: Déploiement
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - id: deploiement
+        uses: actions/deploy-pages@v4

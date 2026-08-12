@@ -1,0 +1,134 @@
+---
+/**
+ * Matrice des marges de charge utile.
+ *
+ * Trois configurations d'équipage croisées avec trois hypothèses sur la masse
+ * réelle du véhicule. Aucune valeur n'est écrite ici : tout vient de
+ * data/derive/configurations.json, calculé depuis le bilan de poids.
+ *
+ * Deux exigences de lecture guident la mise en forme :
+ *   — « hors la loi » et « serré » ne sont pas le même statut et ne se
+ *     ressemblent pas ;
+ *   — l'hypothèse de travail se repère sans avoir à lire les en-têtes.
+ * Le statut est écrit en toutes lettres dans chaque case : la couleur seule ne
+ * porte jamais l'information.
+ */
+import { configurations, nombre } from '../lib/donnees';
+
+interface Props { etat: string; }
+const { etat } = Astro.props;
+
+const seuil = configurations.seuil_marge_serree_kg;
+const lignes = configurations.lignes.filter((l) => l.etat_reservoirs === etat);
+const configs = [...new Map(lignes.map((l) => [l.configuration, l.configuration_libelle])).entries()];
+
+const statut = (marge: number) =>
+  marge < 0 ? { classe: 'hors-limite', mot: 'hors la loi' }
+    : marge < seuil ? { classe: 'serre', mot: 'serré' }
+      : { classe: 'conforme', mot: 'conforme' };
+
+const cellule = (config: string, scenario: string) =>
+  lignes.find((l) => l.configuration === config && l.scenario === scenario)!;
+---
+
+<div class="defilable">
+  <table class="matrice">
+    <thead>
+      <tr>
+        <td></td>
+        {configurations.scenarios.map((s) => (
+          <th scope="col" class={s.id === configurations.scenario_reference ? 'colonne-reference' : ''}>
+            {s.id === configurations.scenario_reference && <span class="badge">hypothèse de travail</span>}
+            <span class="titre-scenario">{s.libelle}</span>
+            <span class="utile">{nombre(s.charge_utile_kg)} kg utiles</span>
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {configs.map(([id, libelle]) => (
+        <tr>
+          <th scope="row">
+            <span class="config">{libelle}</span>
+            <span class="charge">chargé à {nombre(cellule(id, configurations.scenarios[0].id).charge_kg)} kg</span>
+          </th>
+          {configurations.scenarios.map((s) => {
+            const l = cellule(id, s.id);
+            const { classe, mot } = statut(l.marge_kg);
+            return (
+              <td
+                class={`${classe} ${s.id === configurations.scenario_reference ? 'colonne-reference' : ''}`}
+              >
+                <span class="marge">{l.marge_kg > 0 ? '+' : ''}{nombre(l.marge_kg)} kg</span>
+                <span class="statut">{mot}</span>
+              </td>
+            );
+          })}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .matrice { min-width: 42rem; }
+  .matrice thead td { border: 0; }
+
+  .matrice th[scope="col"] {
+    text-align: right;
+    vertical-align: bottom;
+    font-weight: 500;
+    padding-bottom: 0.6rem;
+    line-height: 1.3;
+  }
+  .titre-scenario { display: block; font-weight: 600; }
+  .utile { display: block; font-size: 0.82rem; color: var(--attenue); }
+
+  .badge {
+    display: block;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--encre);
+    margin-bottom: 0.35rem;
+  }
+
+  /* L'hypothèse de travail est encadrée sur toute la hauteur : elle se repère
+     avant qu'on ait lu un seul en-tête. */
+  .colonne-reference {
+    background: var(--appui);
+    border-left: 2px solid var(--encre);
+    border-right: 2px solid var(--encre);
+  }
+  thead .colonne-reference { border-top: 2px solid var(--encre); }
+  tbody tr:last-child .colonne-reference { border-bottom: 2px solid var(--encre); }
+
+  .config { display: block; font-weight: 600; }
+  .charge { display: block; font-size: 0.82rem; color: var(--attenue); font-weight: 400; }
+
+  .matrice td { vertical-align: middle; }
+  .marge { display: block; font-size: 1.15rem; font-weight: 600; }
+  .statut { display: block; font-size: 0.78rem; }
+
+  .conforme .statut { color: var(--attenue); }
+
+  /* « Serré » : tenu, mais sans réserve. Teinte et libellé, pas de pavé plein. */
+  .serre { background: var(--tension-fond); }
+  .serre .marge { color: var(--tension); }
+  .serre .statut { color: var(--tension); font-weight: 600; }
+  .serre.colonne-reference { background: var(--tension-fond); }
+
+  /* « Hors la loi » : pavé plein. Le statut n'est pas une nuance du précédent,
+     il change de nature — le rendu doit changer de nature aussi. */
+  .hors-limite { background: var(--alerte); }
+  .hors-limite .marge,
+  .hors-limite .statut { color: var(--alerte-encre); }
+  .hors-limite .statut { font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .hors-limite.colonne-reference { background: var(--alerte); }
+
+  @media print {
+    .matrice { min-width: 0; }
+    .hors-limite { background: #000; }
+    .serre { background: #eee; }
+  }
+</style>

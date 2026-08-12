@@ -1,0 +1,69 @@
+{
+  "_note": "Spécifications génériques, relevées au catalogue constructeur. Ce fichier est saisi directement dans le dépôt public : il ne dérive d'aucune donnée privée et ne contient ni configuration commerciale, ni prix, ni option retenue.",
+
+  "modele": "Hymer B-MC T 680",
+  "statut_choix": "provisoire",
+  "statut_note": "Le choix du véhicule reste suspendu à un essai physique de chargement de la moto. Tant que cet essai n'a pas eu lieu, ce dépôt ne présente pas ce modèle comme arrêté.",
+
+  "dimensions": {
+    "longueur_cm": 739,
+    "largeur_cm": 229,
+    "hauteur_cm": 298,
+    "hauteur_hors_tout_avec_galerie_et_planche_cm": 325,
+    "hauteur_interieure_cm": 198,
+    "largeur_caisse_cm": 219,
+    "largeur_interieure_cm": 212,
+    "empattement_mm": 4200
+  },
+
+  "base": {
+    "chassis": "Mercedes-Benz Sprinter 4,43 t",
+    "puissance_ch": 150,
+    "puissance_kw": 110,
+    "norme": "Euro VI-E"
+  },
+
+  "masses": {
+    "ptac_kg": 4500,
+    "masse_ordre_marche_declaree_kg": 3088,
+    "tolerance_legale_pct": 5,
+    "charge_soute_kg": 450,
+    "note": "Les charges utiles et les marges par configuration ne sont pas saisies ici : elles se calculent, et le résultat vit dans data/derive/configurations.json."
+  },
+
+  "soute": {
+    "trappe_largeur_cm": 99,
+    "trappe_hauteur_cm": 123,
+    "note": "La hauteur de trappe est le critère qui a départagé le comparatif : c'est la plus grande ouverture du segment, et la seule à permettre le chargement d'une moto d'enduro."
+  },
+
+  "capacites": {
+    "eau_propre_l": 180,
+    "eau_propre_en_circulation_l": 20,
+    "eaux_usees_l": 150,
+    "carburant_l": 92,
+    "adblue_l": 22
+  },
+
+  "isolation_mm": {
+    "plancher": 41,
+    "parois": 34,
+    "toit": 34
+  },
+
+  "amenagement": {
+    "salle_eau_cm": "90 × 80",
+    "douche_separee_cm": "73 × 77",
+    "lit_pavillon_cm": "188 × 130",
+    "lits_jumeaux_cm": ["200 × 84", "188 × 84"],
+    "couchages": "2 à 5",
+    "places_assises_homologuees": 4
+  },
+
+  "exploitation": {
+    "classe_peage": 3,
+    "vitesse_max_autoroute_kmh": 110,
+    "vitesse_max_route_kmh": 80,
+    "note": "Au-delà de 3,5 t de PTAC, les limitations de vitesse et la classe tarifaire changent. Cela pèse sur les temps de trajet et sur le budget de péages."
+  }
+}

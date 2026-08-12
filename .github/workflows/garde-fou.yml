@@ -1,0 +1,48 @@
+name: Garde-fou
+
+# Contrôle systématique des propositions de modification. La publication
+# (pages.yml) relance le même contrôle : une branche qui passe ici n'est pas
+# dispensée d'être revérifiée au moment où elle atteint main.
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  garde-fou:
+    name: Anti-fuite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Vérifier que le garde-fou mord
+        run: node scripts/test-garde-fou.mjs
+
+      - name: Contrôler le dépôt
+        run: node scripts/garde-fou.mjs
+        env:
+          GARDE_FOU_SEL: ${{ secrets.GARDE_FOU_SEL }}
+
+  build:
+    name: Construction et validation des données
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+        working-directory: site
+      - run: npm run build
+        working-directory: site
+      - name: Vérifier le rendu
+        run: node scripts/test-rendu.mjs

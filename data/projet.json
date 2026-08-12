@@ -1,0 +1,15 @@
+{
+  "_note": "Identité éditoriale du projet. Source unique de la mention de copyright : elle n'est répétée nulle part ailleurs dans le site. Changer `titulaire_droits` ici suffit à la propager partout, sans réécrire l'historique Git.",
+
+  "nom": "Van Exploration",
+  "titulaire_droits": "BillyMcL",
+  "titulaire_droits_statut": "pseudonyme",
+  "titulaire_droits_note": "Décision réversible (D-15). Le passage au nom civil se fait en modifiant cette seule valeur et la ligne correspondante de LICENSE, que le build vérifie comme cohérente.",
+  "annee_copyright": 2026,
+
+  "licence_code": "MIT",
+  "licence_contenu": "CC BY-NC-ND 4.0",
+  "licence_contenu_url": "https://creativecommons.org/licenses/by-nc-nd/4.0/deed.fr",
+
+  "depot_public": "https://github.com/BillyMcL/Van_Exploration"
+}

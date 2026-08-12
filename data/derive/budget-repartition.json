@@ -1,0 +1,70 @@
+{
+  "_avertissement": "Répartition en pourcentages. Aucun montant absolu ne figure dans ce fichier, et le poste véhicule en est volontairement exclu.",
+  "perimetre": "Équipement et fonctionnement uniquement. Le véhicule, son aménagement et sa décote sont exclus de cette répartition.",
+  "phases": {
+    "acquisition": [
+      {
+        "categorie": "production_images",
+        "part_pct": 45.4
+      },
+      {
+        "categorie": "sports",
+        "part_pct": 26.7
+      },
+      {
+        "categorie": "equipement_personnel",
+        "part_pct": 12.2
+      },
+      {
+        "categorie": "mobilite",
+        "part_pct": 10.8
+      },
+      {
+        "categorie": "formation",
+        "part_pct": 4.9
+      }
+    ],
+    "fonctionnement": [
+      {
+        "categorie": "energie_carburant",
+        "part_pct": 22.1
+      },
+      {
+        "categorie": "vie_courante",
+        "part_pct": 19.5
+      },
+      {
+        "categorie": "hebergement_peages",
+        "part_pct": 17.4
+      },
+      {
+        "categorie": "assurances",
+        "part_pct": 15.2
+      },
+      {
+        "categorie": "vehicule_exploitation",
+        "part_pct": 9.2
+      },
+      {
+        "categorie": "provisions",
+        "part_pct": 7.4
+      },
+      {
+        "categorie": "chiens",
+        "part_pct": 4.6
+      },
+      {
+        "categorie": "telecom",
+        "part_pct": 1.8
+      },
+      {
+        "categorie": "production_images",
+        "part_pct": 1.4
+      },
+      {
+        "categorie": "sports",
+        "part_pct": 1.3
+      }
+    ]
+  }
+}

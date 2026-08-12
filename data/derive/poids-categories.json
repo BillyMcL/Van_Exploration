@@ -1,0 +1,43 @@
+{
+  "_note": "Kilogrammes par catégorie, en état de réservoirs conforme aux règles d'exploitation. Le détail poste par poste reste privé : il décrit le contenu du véhicule.",
+  "etat_reservoirs": "Conforme aux règles d'exploitation",
+  "total_kg": 834,
+  "categories": [
+    {
+      "categorie": "energie",
+      "kg": 189
+    },
+    {
+      "categorie": "vie_a_bord",
+      "kg": 167
+    },
+    {
+      "categorie": "mobilite",
+      "kg": 138
+    },
+    {
+      "categorie": "production_images",
+      "kg": 81
+    },
+    {
+      "categorie": "chiens",
+      "kg": 73
+    },
+    {
+      "categorie": "sports",
+      "kg": 63
+    },
+    {
+      "categorie": "eau",
+      "kg": 60
+    },
+    {
+      "categorie": "structure",
+      "kg": 35
+    },
+    {
+      "categorie": "atelier",
+      "kg": 28
+    }
+  ]
+}

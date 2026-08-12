@@ -1,0 +1,183 @@
+---
+import Base from '../layouts/Base.astro';
+import Matrice from '../components/Matrice.astro';
+import { configurations, poids, regles, nombre } from '../lib/donnees';
+
+const seuil = configurations.seuil_marge_serree_kg;
+const refEtat = configurations.etats_reservoirs[0];
+const refScenario = configurations.scenarios.find((s) => s.id === configurations.scenario_reference)!;
+const catalogue = configurations.scenarios[0];
+const pireCas = configurations.scenarios.at(-1)!;
+
+// Le constat d'ouverture est calculé, pas rédigé : si les données bougent, la
+// phrase bouge avec elles ou le compte devient faux.
+const auPireCas = configurations.lignes.filter(
+  (l) => l.etat_reservoirs === refEtat.id && l.scenario === pireCas.id,
+);
+const illegales = auPireCas.filter((l) => l.marge_kg < 0);
+const serrees = auPireCas.filter((l) => l.marge_kg >= 0 && l.marge_kg < seuil);
+
+// Nombre de configurations hors limite, par état de réservoirs et par hypothèse.
+const resume = configurations.etats_reservoirs.map((etat) => ({
+  etat,
+  cases: configurations.scenarios.map((s) => ({
+    scenario: s,
+    hors: configurations.lignes.filter(
+      (l) => l.etat_reservoirs === etat.id && l.scenario === s.id && l.marge_kg < 0,
+    ).length,
+  })),
+}));
+
+const enLettres = ['zéro', 'une', 'deux', 'trois', 'quatre', 'cinq'];
+const lettre = (n: number) => enLettres[n] ?? String(n);
+
+const maxCategorie = Math.max(...poids.categories.map((c) => c.kg));
+const nomsCategories: Record<string, string> = {
+  energie: 'Système électrique',
+  vie_a_bord: 'Vie à bord',
+  mobilite: 'Moto et fixation',
+  production_images: 'Production d\'images',
+  chiens: 'Les deux chiens',
+  sports: 'Sports et bivouac',
+  eau: 'Eau embarquée',
+  structure: 'Galerie et échelle',
+  atelier: 'Outillage',
+};
+---
+
+<Base
+  titre="Charge utile"
+  description="Trois configurations d'équipage croisées avec trois hypothèses sur la masse réelle du véhicule. Pourquoi le plafond de masse au bon de commande est une clause suspensive."
+>
+  <h1>La charge utile n'est pas une donnée, c'est une hypothèse</h1>
+
+  <p class="chapo">
+    Le catalogue annonce {nombre(catalogue.charge_utile_kg)} kg de charge utile. Ce chiffre suppose
+    que le véhicule pèse exactement son poids annoncé. La tolérance légale sur la masse en ordre de
+    marche autorise {nombre(pireCas.mom_kg - catalogue.mom_kg)} kg de plus, et le constructeur pèse
+    chaque véhicule en fin de chaîne. Selon ce que dira la balance, la charge utile réelle vaut
+    {nombre(pireCas.charge_utile_kg)} à {nombre(catalogue.charge_utile_kg)} kg — un écart qui décide
+    de ce qu'on peut emporter et de qui peut monter à bord.
+  </p>
+
+  <div class="constat">
+    <p>
+      <strong>
+        Si ce poids n'est pas plafonné par écrit au bon de commande,
+        {illegales.length === 1 ? 'une configuration' : `${lettre(illegales.length)} configurations`}
+        {' '}sur {lettre(auPireCas.length)} {illegales.length === 1 ? 'devient illégale' : 'deviennent illégales'}
+        {serrees.length > 0 && <> et {serrees.length === 1 ? 'une autre tombe' : `${lettre(serrees.length)} autres tombent`} sous {seuil} kg de marge</>}.
+      </strong>
+    </p>
+    <p class="note">
+      C'est pour cette raison que le plafond figure au dossier comme une clause suspensive et non
+      comme une préférence de confort : il ne rend pas le voyage plus agréable, il rend deux
+      configurations sur trois transportables.
+    </p>
+  </div>
+
+  <h2>Marges par configuration</h2>
+  <p class="note">
+    Réservoirs dans l'état qu'imposent les règles d'exploitation : plein d'eau fait à l'arrivée,
+    eaux usées vidangées avant l'étape. Le conducteur est déjà compté dans la masse en ordre de
+    marche ; chaque passager pèse {configurations.masse_passager_kg} kg, affaires et part d'eau
+    comprises.
+  </p>
+
+  <Matrice etat={refEtat.id} />
+
+  <ul class="legende">
+    <li><span class="pastille conforme"></span> <strong>Conforme</strong> — plus de {seuil} kg de marge</li>
+    <li><span class="pastille serre"></span> <strong>Serré</strong> — moins de {seuil} kg. Se gère, mais interdit tout emport supplémentaire</li>
+    <li><span class="pastille hors-limite"></span> <strong>Hors la loi</strong> — au-delà du PTAC de {nombre(configurations.ptac_kg)} kg. Ne se gère pas</li>
+  </ul>
+  <p class="note">{configurations.seuil_marge_serree_note}</p>
+
+  <h2>Ce que coûte l'écart aux règles</h2>
+  <p class="note">
+    Nombre de configurations sortant de la charge utile, selon l'état des réservoirs au départ
+    de l'étape. Le plein d'eau et un réservoir d'eaux usées chargé pèsent ensemble
+    {Math.round(
+      configurations.lignes.find((l) => l.etat_reservoirs === 'pire_cas' && l.configuration === 'solo' && l.scenario === refScenario.id)!.charge_kg
+      - configurations.lignes.find((l) => l.etat_reservoirs === 'reference' && l.configuration === 'solo' && l.scenario === refScenario.id)!.charge_kg,
+    )} kg de plus que l'état conforme.
+  </p>
+
+  <div class="defilable">
+    <table class="resume">
+      <thead>
+        <tr>
+          <td></td>
+          {configurations.scenarios.map((s) => (
+            <th scope="col" class={s.id === configurations.scenario_reference ? 'ref' : ''}>{s.libelle}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {resume.map(({ etat, cases }) => (
+          <tr>
+            <th scope="row">{etat.libelle}</th>
+            {cases.map(({ scenario, hors }) => (
+              <td class={`${hors > 0 ? 'mauvais' : 'bon'} ${scenario.id === configurations.scenario_reference ? 'ref' : ''}`}>
+                {hors === 0 ? 'aucune' : `${hors} sur ${auPireCas.length}`}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Règles d'exploitation</h2>
+  {regles.regles.map((r) => (
+    <section class="regle">
+      <h3>{r.titre}</h3>
+      <p>{r.enonce}</p>
+    </section>
+  ))}
+
+  <h2>Répartition du chargement</h2>
+  <p class="note">
+    {nombre(poids.total_kg)} kg au total, réservoirs conformes. Le détail poste par poste n'est pas publié :
+    il décrit le contenu du véhicule.
+  </p>
+
+  <ul class="barres">
+    {poids.categories.map((c) => (
+      <li>
+        <span class="etiquette">{nomsCategories[c.categorie] ?? c.categorie}</span>
+        <span class="barre"><span style={`width:${(c.kg / maxCategorie) * 100}%`}></span></span>
+        <span class="valeur">{c.kg} kg</span>
+      </li>
+    ))}
+  </ul>
+</Base>
+
+<style>
+  .legende { list-style: none; padding: 0; margin: 1.25rem 0 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem 1.75rem; font-size: 0.88rem; }
+  .legende li { display: flex; align-items: center; gap: 0.5rem; }
+  .pastille { width: 0.9rem; height: 0.9rem; border: 1px solid var(--trait); flex: none; }
+  .pastille.serre { background: var(--tension-fond); border-color: var(--tension); }
+  .pastille.hors-limite { background: var(--alerte); border-color: var(--alerte); }
+
+  .resume { min-width: 38rem; }
+  .resume th[scope="col"] { text-align: right; font-weight: 600; }
+  .resume .ref { background: var(--appui); border-left: 2px solid var(--encre); border-right: 2px solid var(--encre); }
+  .resume .bon { color: var(--attenue); }
+  .resume .mauvais { color: var(--alerte); font-weight: 700; }
+
+  .regle { max-width: 46rem; }
+  .regle h3 { margin-bottom: 0.25rem; }
+  .regle p { margin-top: 0; }
+
+  .barres { list-style: none; padding: 0; margin: 1.5rem 0 0; }
+  .barres li { display: grid; grid-template-columns: 11rem 1fr 4rem; gap: 0.9rem; align-items: center; padding: 0.28rem 0; }
+  .etiquette { font-size: 0.9rem; }
+  .barre { background: var(--appui); height: 0.85rem; }
+  .barre > span { display: block; height: 100%; background: var(--encre); }
+  .valeur { text-align: right; font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+  @media (max-width: 34rem) {
+    .barres li { grid-template-columns: 1fr 3.5rem; }
+    .barre { grid-column: 1 / -1; }
+  }
+</style>

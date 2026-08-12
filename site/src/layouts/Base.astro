@@ -1,0 +1,147 @@
+---
+/**
+ * Coquille commune. Aucune donnée n'y est saisie : le titulaire des droits et
+ * les licences viennent de data/projet.json.
+ */
+import { projet } from '../lib/donnees';
+
+interface Props {
+  titre: string;
+  description: string;
+}
+const { titre, description } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const liens = [
+  { href: `${base}/`, texte: 'Le projet' },
+  { href: `${base}/itineraire`, texte: 'Itinéraire' },
+  { href: `${base}/poids`, texte: 'Charge utile' },
+  { href: `${base}/energie`, texte: 'Énergie' },
+  { href: `${base}/budget`, texte: 'Budget' },
+];
+const courant = Astro.url.pathname.replace(/\/$/, '') || base;
+---
+
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titre} — {projet.nom}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body>
+    <header>
+      <a class="marque" href={`${base}/`}>{projet.nom}</a>
+      <nav>
+        {liens.slice(1).map((l) => (
+          <a href={l.href} aria-current={courant === l.href ? 'page' : undefined}>{l.texte}</a>
+        ))}
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer>
+      <p>
+        © {projet.annee_copyright} {projet.titulaire_droits}. Contenu sous licence
+        <a href={projet.licence_contenu_url}>{projet.licence_contenu}</a>, code sous licence {projet.licence_code}.
+      </p>
+      <p>
+        Les chiffres publiés ici sont calculés à partir de fichiers de données, jamais saisis dans la page.
+        Chaque valeur porte sa provenance : donnée constructeur, mesure, estimation, ou reste à obtenir.
+      </p>
+    </footer>
+
+    <style is:global>
+      :root {
+        --fond: #fbfaf8;
+        --encre: #1c1b19;
+        --attenue: #6b6863;
+        --trait: #d6d2cb;
+        --appui: #f1eee9;
+        --alerte: #8f2318;
+        --alerte-encre: #fff;
+        --tension: #7a5416;
+        --tension-fond: #f7edda;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --fond: #16151a;
+          --encre: #eae7e2;
+          --attenue: #9d9891;
+          --trait: #35333a;
+          --appui: #201f26;
+          --alerte: #ff8878;
+          --alerte-encre: #16151a;
+          --tension: #e6b45c;
+          --tension-fond: #2b2416;
+        }
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--fond);
+        color: var(--encre);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        line-height: 1.65;
+        font-size: 17px;
+      }
+      main { max-width: 64rem; margin: 0 auto; padding: 0 1.25rem 5rem; }
+
+      header {
+        max-width: 64rem;
+        margin: 0 auto;
+        padding: 1.5rem 1.25rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.5rem;
+        align-items: baseline;
+        border-bottom: 1px solid var(--trait);
+      }
+      .marque { font-weight: 650; text-decoration: none; color: inherit; letter-spacing: -0.01em; }
+      header nav { display: flex; flex-wrap: wrap; gap: 1.25rem; font-size: 0.92rem; }
+      header nav a { color: var(--attenue); text-decoration: none; }
+      header nav a:hover { color: var(--encre); }
+      header nav a[aria-current="page"] { color: var(--encre); font-weight: 600; }
+
+      h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.15; letter-spacing: -0.02em; margin: 2.5rem 0 0.75rem; }
+      h2 { font-size: 1.3rem; letter-spacing: -0.01em; margin: 3rem 0 0.75rem; }
+      h3 { font-size: 1.05rem; margin: 2rem 0 0.5rem; }
+      a { color: inherit; }
+
+      .chapo { font-size: 1.15rem; color: var(--attenue); max-width: 46rem; margin-bottom: 2rem; }
+      .constat {
+        border-left: 3px solid var(--alerte);
+        padding: 0.25rem 0 0.25rem 1.25rem;
+        margin: 2rem 0;
+        max-width: 46rem;
+      }
+      .note { font-size: 0.9rem; color: var(--attenue); max-width: 46rem; }
+      .source { font-variant-numeric: tabular-nums; font-size: 0.82rem; color: var(--attenue); }
+
+      footer {
+        max-width: 64rem;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 4rem;
+        border-top: 1px solid var(--trait);
+        color: var(--attenue);
+        font-size: 0.85rem;
+      }
+      footer p { max-width: 46rem; }
+
+      table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+      caption { text-align: left; color: var(--attenue); font-size: 0.9rem; padding-bottom: 0.75rem; }
+      th, td { padding: 0.55rem 0.7rem; text-align: right; border-bottom: 1px solid var(--trait); }
+      th[scope="row"], thead th:first-child, td:first-child { text-align: left; }
+      .defilable { overflow-x: auto; }
+
+      @media print {
+        header nav, .defilable { display: none; }
+        body { background: #fff; color: #000; font-size: 11pt; }
+      }
+    </style>
+  </body>
+</html>

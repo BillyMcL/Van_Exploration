@@ -1,0 +1,52 @@
+# Construction
+site/dist/
+site/.astro/
+node_modules/
+
+# Fichiers lourds : ils n'entrent jamais dans le dépôt public.
+# Le site ne sert que des dérivés web. Les originaux vivent en stockage externe
+# et sont référencés par les manifestes de media/*/manifest.csv.
+*.arw
+*.cr2
+*.cr3
+*.nef
+*.dng
+*.tif
+*.tiff
+*.psd
+*.las
+*.laz
+*.e57
+*.ply
+*.obj
+*.fbx
+*.mov
+*.mp4
+*.mxf
+*.braw
+*.wav
+
+# Sources du dépôt privé — ne devraient jamais arriver ici, mais si elles
+# arrivent, autant qu'elles ne soient pas versionnées par inadvertance.
+# Le garde-fou les refuse de toute façon.
+budget.csv
+poids.csv
+materiel.csv
+masses.json
+hypotheses.json
+vehicule-config.json
+energie-systeme.json
+prospectif.geojson
+stationnements.geojson
+PASSATION*.md
+Mon-Hymer-*.pdf
+*.qgz
+*.qgs
+*.gpkg
+
+# Système
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+*.tmp

@@ -1,0 +1,96 @@
+---
+import Base from '../layouts/Base.astro';
+import { configurations, energie, paysTraverses, manifest, nombre } from '../lib/donnees';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const pireCas = configurations.scenarios.at(-1)!;
+const contraint = energie.scenarios.reduce((pire, s) =>
+  (s.production_kwh_jour.min - s.consommation_kwh_jour.max) < (pire.production_kwh_jour.min - pire.consommation_kwh_jour.max) ? s : pire);
+
+const entrees = [
+  {
+    href: `${base}/poids`,
+    titre: 'Charge utile',
+    accroche: `Trois configurations, trois hypothèses de masse. Pourquoi le plafond au bon de commande est une clause suspensive et pas une préférence.`,
+  },
+  {
+    href: `${base}/energie`,
+    titre: 'Énergie',
+    accroche: `Le dimensionnement tient en été. La contrainte est l'hiver ibérique — ${nombre(contraint.production_kwh_jour.min)} à ${nombre(contraint.production_kwh_jour.max)} kWh produits par jour.`,
+  },
+  {
+    href: `${base}/itineraire`,
+    titre: 'Itinéraire',
+    accroche: `${paysTraverses.features.length} pays traversés. Ordre et dates non publiés — l'itinéraire ne se diffuse qu'après le passage.`,
+  },
+  {
+    href: `${base}/budget`,
+    titre: 'Budget',
+    accroche: 'La structure de la dépense, jamais son montant. Le poste véhicule est exclu de la répartition, et la page dit pourquoi.',
+  },
+];
+---
+
+<Base
+  titre="Le projet"
+  description="Une expédition documentaire itinérante à travers l'Europe. Photographie, photogrammétrie, astrophotographie et écrits, depuis un atelier mobile."
+>
+  <h1>Une expédition documentaire, pas un voyage</h1>
+
+  <p class="chapo">
+    Six à douze mois à travers l'Europe en camping-car, avec deux chiens et une moto d'enduro
+    embarquée. L'objet n'est pas le déplacement mais ce qu'il produit : photographie
+    documentaire, photogrammétrie de sites et de bâtiments, astrophotographie, écrits de
+    terrain. Le véhicule est un atelier — il doit permettre de capturer, traiter et archiver
+    en autonomie.
+  </p>
+
+  <p>
+    Trois exigences commandent tout le reste. Le confort et la sécurité des deux chiens, qui
+    dimensionnent le système électrique. Un poste de travail réel à bord. Et la moto comme
+    moyen secondaire : le camping-car parcourt la distance parce que les chiens sont dedans,
+    la moto sert à rayonner depuis un point d'ancrage.
+  </p>
+
+  <div class="constat">
+    <p><strong>Le choix du véhicule est provisoire.</strong></p>
+    <p class="note">
+      Il reste suspendu à un essai physique de chargement de la moto en soute. C'est le seul
+      point du dossier qui n'ait pas été vérifié, et son échec rouvrirait le choix du véhicule.
+      Rien ici ne le présente comme arrêté.
+    </p>
+  </div>
+
+  <nav class="entrees" aria-label="Les vues de données">
+    {entrees.map((e) => (
+      <a href={e.href}>
+        <span class="titre">{e.titre}</span>
+        <span class="accroche">{e.accroche}</span>
+      </a>
+    ))}
+  </nav>
+
+  <h2>Comment lire ces pages</h2>
+  <p>
+    Aucun chiffre n'est saisi dans une page. Les vues lisent des fichiers de données validés à
+    la construction du site : une donnée malformée fait échouer le build au lieu de publier une
+    page fausse. Les totaux ne sont stockés nulle part, ils se calculent — un chiffre écrit deux
+    fois est un chiffre qui finira par diverger.
+  </p>
+  <p>
+    Chaque valeur porte sa provenance, et la distinction est maintenue jusqu'ici : ce qui est
+    relevé au catalogue constructeur, ce qui est mesuré, ce qui est devisé, ce qui reste à
+    obtenir. Une charge utile catalogue de {nombre(configurations.scenarios[0].charge_utile_kg)} kg
+    et une charge utile au pire cas légal de {nombre(pireCas.charge_utile_kg)} kg ne sont pas le
+    même genre de fait, et la nuance décide de qui peut monter à bord.
+  </p>
+  <p class="source">Données dérivées — empreinte des sources {manifest.empreinte_sources}, contrat v{manifest.version_contrat}.</p>
+</Base>
+
+<style>
+  .entrees { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1px; background: var(--trait); border: 1px solid var(--trait); margin: 2.5rem 0; }
+  .entrees a { background: var(--fond); padding: 1.25rem; text-decoration: none; display: block; }
+  .entrees a:hover { background: var(--appui); }
+  .titre { display: block; font-weight: 650; margin-bottom: 0.35rem; }
+  .accroche { display: block; font-size: 0.9rem; color: var(--attenue); line-height: 1.5; }
+</style>

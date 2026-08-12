@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import Carte from '../components/Carte.astro';
+import { paysTraverses } from '../lib/donnees';
+
+const pays = paysTraverses.features.map((f) => f.properties.pays);
+---
+
+<Base
+  titre="Itinéraire"
+  description="Les pays traversés par l'expédition. L'itinéraire détaillé n'est publié qu'en rétrospective, jamais à l'avance."
+>
+  <h1>Où, sans quand</h1>
+
+  <p class="chapo">
+    L'expédition traverse {pays.length} pays : {pays.slice(0, -1).join(', ')} et {pays.at(-1)}.
+    De la côte atlantique à la Scandinavie, en base mobile et à durée d'étape libre.
+  </p>
+
+  <div class="constat">
+    <p><strong>Cette carte ne montre pas un tracé.</strong></p>
+    <p class="note">
+      Elle situe des pays sans les relier et sans les dater. Une ligne entre ces points donnerait
+      un ordre de passage, donc un calendrier, donc l'endroit où se trouvera le véhicule. Un
+      véhicule dont on connaît la position, le contenu et les moments d'absence n'est plus un
+      atelier, c'est une cible. Les étapes réelles seront publiées après le passage — jamais avant.
+    </p>
+  </div>
+
+  <Carte />
+
+  <h2>La règle, et comment elle tient</h2>
+  <p>
+    Le décalage d'une étape n'est pas une intention de rédaction, c'est une condition machine :
+    une étape n'est exportée vers ce dépôt que si l'on en est parti. Les coordonnées publiées
+    sont arrondies, les lieux de stationnement nocturne remplacés par le centroïde de leur
+    commune, et les métadonnées de position sont retirées des photographies avant publication —
+    chaque image d'astrophotographie porte les coordonnées du lieu où elle a été prise.
+  </p>
+  <p class="note">
+    Le contrôle qui garde ce dépôt refuse aussi tout fichier cartographique portant un attribut
+    de date, d'ordre ou de séquence. Un ordre implique un calendrier, et la règle du décalage ne
+    voyait pas cette voie-là.
+  </p>
+</Base>
