@@ -96,6 +96,18 @@ où sera le véhicule.
 
 Il ne fait pas confiance à l'export : il vérifie le résultat.
 
+### L'historique aussi
+
+Un dépôt public expose son historique. Une valeur commitée puis corrigée reste
+lisible dans le commit qui l'a introduite, et contrôler le dernier état ne dit
+rien de ce qui a été écrit avant.
+
+`scripts/garde-fou-historique.mjs` rejoue donc le garde-fou sur **chaque commit
+atteignable**, en injectant la liste d'empreintes courante dans chaque arbre
+extrait : un commit ancien est jugé sur ce qui est privé aujourd'hui, pas sur ce
+qui l'était quand il a été écrit. Le job CI utilise `fetch-depth: 0` — sans quoi
+il passerait au vert sans avoir rien inspecté.
+
 ### Ce que le garde-fou ne couvre pas
 
 Le contrôle des valeurs littérales s'arrête **en dessous de 100 € et de 20 kg**.
