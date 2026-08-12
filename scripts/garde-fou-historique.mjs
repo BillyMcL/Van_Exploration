@@ -46,6 +46,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { createHmac } from 'node:crypto';
 
 const ICI = join(fileURLToPath(new URL('.', import.meta.url)), '..');
 const GARDE_FOU = join(ICI, 'scripts', 'garde-fou.mjs');
@@ -76,6 +77,29 @@ if (existsSync(EMPREINTES) && !sel) {
   console.error('\nLe sel HMAC est introuvable. Le contrôle des valeurs littérales ne peut pas');
   console.error('s\'exécuter sur l\'historique, donc rien n\'est déclaré propre.\n');
   process.exit(1);
+}
+
+/**
+ * Témoin du sel, vérifié ICI et pas seulement dans le garde-fou appelé.
+ *
+ * Un sel erroné faisait bien échouer ce contrôle — le garde-fou enfant s'en
+ * apercevait — mais le rapport déroulait des « inspection impossible » commit par
+ * commit sans jamais nommer la cause. Échouer pour une raison fausse vaut à peine
+ * mieux que passer à tort : on cherche le défaut là où il n'est pas.
+ */
+if (existsSync(EMPREINTES)) {
+  const liste = JSON.parse(readFileSync(EMPREINTES, 'utf8'));
+  if (liste.controle) {
+    const attendu = createHmac('sha256', sel).update('controle:van-exploration').digest('hex').slice(0, 16);
+    if (attendu !== liste.controle) {
+      console.error('\nLe sel HMAC ne correspond pas à la liste d\'empreintes.');
+      console.error('Aucune empreinte ne pourrait correspondre : l\'historique serait parcouru en');
+      console.error('entier sans qu\'aucune valeur privée puisse être reconnue.');
+      console.error('\nVérifier le secret GARDE_FOU_SEL — une valeur tronquée, ou copiée avec le');
+      console.error('saut de ligne final du fichier export/.sel, suffit à tout invalider.\n');
+      process.exit(1);
+    }
+  }
 }
 
 /* ------------------------------------------------ commits déjà rendus publics

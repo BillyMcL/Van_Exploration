@@ -44,14 +44,15 @@ function empreintes(depuis, assume = false) {
   writeFileSync(join(depot, 'data', 'empreintes-interdites.json'), JSON.stringify({
     version_extracteur: 2,
     seuils: { monnaie: 100, masse: 20 },
+    controle: hmac('controle', 'van-exploration'),
     empreintes: [{ e: hmac('monnaie', VALEUR), depuis, ...(assume ? { assume: true } : {}) }],
   }, null, 2), 'utf8');
 }
 
-const scanner = () => {
+const scanner = ({ sel = SEL } = {}) => {
   const r = spawnSync(process.execPath, [SCANNER, '--depot', depot], {
     encoding: 'utf8',
-    env: { ...process.env, GARDE_FOU_SEL: SEL },
+    env: { ...process.env, GARDE_FOU_SEL: sel },
   });
   return { code: r.status, sortie: r.stdout + r.stderr };
 };
@@ -143,6 +144,19 @@ commit('Réintroduit la valeur localement', '2026-08-01T12:00:00+01:00');
   verifier(code === 1, 'le contrôle échoue');
   verifier(/fuite\(s\) à corriger/i.test(sortie), 'la situation est nommée « à corriger »');
   verifier(/pas sortis/i.test(sortie), 'le rapport rappelle que ces commits sont encore rattrapables');
+}
+
+/* ---------------------------------- 5. sel erroné : la cause doit être nommée */
+
+console.log('\nSel erroné — le contrôle doit nommer la cause, pas dérouler des erreurs :\n');
+{
+  const { code, sortie } = scanner({ sel: 'un-sel-qui-nest-pas-le-bon' });
+  verifier(code === 1, 'le contrôle échoue');
+  verifier(/sel HMAC ne correspond pas/i.test(sortie),
+    'le rapport désigne le sel',
+    'Échouer pour une raison fausse fait chercher le défaut là où il n\'est pas.');
+  verifier(!/inspection impossible/i.test(sortie),
+    'il ne noie pas la cause sous des erreurs par commit');
 }
 
 rmSync(atelier, { recursive: true, force: true });

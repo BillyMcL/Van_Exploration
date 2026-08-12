@@ -8,6 +8,35 @@
  *
  * Il existe parce qu'un jour quelqu'un copiera un fichier à la main.
  *
+ * ─────────────────────────────────────────────────────────────────────────────
+ * RÈGLE DE MODIFICATION — à lire avant d'ajouter la moindre exception
+ *
+ * Toute exception, exclusion ou assouplissement ajouté à ce garde-fou doit
+ * s'accompagner, dans le même changement, d'un test prouvant qu'il ne défait
+ * aucune détection. Pas de règle relâchée sans témoin qui la met à l'épreuve.
+ *
+ * Ce n'est pas une précaution théorique : le motif s'est répété trois fois.
+ *
+ *   — Une clé de métadonnée nommée `_ordre`, dans un fichier dont tout l'objet
+ *     était de ne porter aucun ordre, a déclenché la règle. La tentation était
+ *     d'assouplir la règle ; la bonne réponse était de renommer la clé.
+ *
+ *   — L'exclusion des fichiers d'outillage de la recherche de motifs en clair,
+ *     justifiée en elle-même, couvrait aussi le contrôle des empreintes. Le
+ *     garde-fou cessait de s'inspecter lui-même, et il a fallu l'élargir pour
+ *     découvrir qu'il laissait passer une vraie valeur privée dans ses propres
+ *     commentaires.
+ *
+ *   — Un sel erroné ne faisait correspondre aucune empreinte : le contrôle
+ *     devenait vide et annonçait « aucune fuite détectée ». Une protection qui
+ *     échoue en silence est pire qu'une protection absente — celle-ci ferait au
+ *     moins remarquer son absence. D'où le témoin de sel, et son test.
+ *
+ * À chaque fois, le défaut n'était pas dans la règle mais dans ce qui l'avait
+ * dispensée de s'appliquer. Une exception non testée finit par en devenir une
+ * pour tout le monde.
+ * ─────────────────────────────────────────────────────────────────────────────
+ *
  * CE QUI N'EST PAS COUVERT — à lire avant de s'y fier
  *
  * Le contrôle des valeurs littérales s'arrête en dessous de 100 € et de 20 kg.
