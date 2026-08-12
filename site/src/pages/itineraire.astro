@@ -33,10 +33,17 @@ const quittes = itineraire.features.length;
   <h2>La règle, et comment elle tient</h2>
   <p>
     Le décalage d'une étape n'est pas une intention de rédaction, c'est une condition machine :
-    une étape n'est exportée vers ce dépôt que si l'on en est parti. Les coordonnées publiées
-    sont arrondies, les lieux de stationnement nocturne remplacés par le centroïde de leur
-    commune, et les métadonnées de position sont retirées des photographies avant publication —
-    chaque image d'astrophotographie porte les coordonnées du lieu où elle a été prise.
+    une étape n'est exportée vers ce dépôt que si l'on en est parti, et le comparateur est
+    strict — le jour même du départ, on y est encore. Les coordonnées publiées sont arrondies à
+    une centaine de mètres et les métadonnées de position sont retirées des photographies avant
+    publication, chaque image d'astrophotographie portant les coordonnées du lieu où elle a été
+    prise.
+  </p>
+  <p>
+    Les lieux de stationnement nocturne, eux, ne sortent pas du tout. Un premier contrat prévoyait
+    de les publier ramenés au centroïde de leur commune : la règle a été retirée, parce qu'un
+    centroïde de commune croisé avec une étape publiée désigne encore l'endroit où le véhicule
+    dort.
   </p>
   <p class="note">
     Le contrôle qui garde ce dépôt refuse aussi tout fichier cartographique portant un attribut

@@ -9,7 +9,12 @@
     "energie-scenarios.json",
     "itineraire-public.geojson",
     "jalons.json",
+    "journal/",
     "poids-categories.json",
     "regles-exploitation.json"
-  ]
+  ],
+  "journal": {
+    "publiees": 0,
+    "retenues": 0
+  }
 }

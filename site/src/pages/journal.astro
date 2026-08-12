@@ -1,0 +1,81 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const entrees = (await getCollection('journal'))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const dateLongue = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<Base
+  titre="Journal de bord"
+  description="Le carnet de l'expédition, publié en différé. Une entrée paraît lorsque l'itinéraire l'autorise, jamais quand elle est écrite."
+>
+  <h1>Écrire n'est pas publier</h1>
+
+  <p class="chapo">
+    Un carnet écrit le soir dit forcément où l'on est. Les entrées sont donc rédigées hors ligne,
+    conservées, et ne paraissent ici qu'une fois le lieu suffisamment loin derrière — la même
+    règle que pour la carte et pour les images, sur la même horloge.
+  </p>
+
+  <div class="constat">
+    <p><strong>Une entrée ne paraît pas parce qu'on la juge prête.</strong></p>
+    <p class="note">
+      Elle paraît parce qu'un programme constate que l'étape <em>suivant</em> celle qu'elle
+      raconte a été quittée à son tour. Avoir quitté un endroit ne suffit pas : ce peut être vrai
+      dès le lendemain, et publier alors désigne un point dont le véhicule vient à peine de partir.
+      Le décalage est d'au moins deux étapes.
+    </p>
+  </div>
+
+  {entrees.length === 0 ? (
+    <p>
+      <strong>Le journal est vide, et c'est son état normal avant le départ.</strong> Rien n'a
+      encore été vécu à bord. La mécanique de publication existe, elle est éprouvée, et elle
+      attend d'avoir quelque chose à retenir.
+    </p>
+  ) : (
+    <ol class="entrees">
+      {entrees.map((e) => (
+        <li>
+          <a href={`${base}/journal/${e.id}`}>
+            <span class="titre">{e.data.titre}</span>
+            <span class="meta">
+              <time datetime={e.data.date.toISOString().slice(0, 10)}>
+                {dateLongue.format(e.data.date)}
+              </time>
+              {e.data.lieu && <> · {e.data.lieu}</>}
+            </span>
+            <span class="resume">{e.data.resume}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  )}
+
+  <h2>Pourquoi le carnet ne vit pas dans ce dépôt</h2>
+  <p>
+    Un fichier versé au dépôt public est publié à la seconde où il est poussé. Aucun filtre
+    appliqué à la construction du site n'y changerait quoi que ce soit : le fichier serait là, et
+    se lirait. Les entrées vivent donc dans le dépôt privé, et l'export en fait sortir celles que
+    la règle autorise — champ par champ, jamais la page entière. Une note personnelle, un nom,
+    un montant écrits en marge ne franchissent pas ce passage.
+  </p>
+  <p class="note">
+    Le dossier publié est effacé et réécrit à chaque export. Une entrée retirée disparaît donc
+    réellement : un filtre ne s'applique qu'à ce qu'on écrit, jamais à ce qui traîne déjà.
+  </p>
+</Base>
+
+<style>
+  .entrees { list-style: none; padding: 0; margin: 2.5rem 0 0; }
+  .entrees li { border-top: 1px solid var(--trait); }
+  .entrees a { display: block; padding: 1.1rem 0; text-decoration: none; color: inherit; }
+  .entrees a:hover { background: var(--appui); }
+  .titre { display: block; font-weight: 650; }
+  .meta { display: block; font-size: 0.85rem; color: var(--attenue); margin-top: 0.15rem; }
+  .resume { display: block; margin-top: 0.4rem; max-width: 46rem; }
+</style>

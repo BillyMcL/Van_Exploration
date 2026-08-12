@@ -1,0 +1,58 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths = (async () => {
+  const entrees = await getCollection('journal');
+  return entrees.map((entree) => ({ params: { slug: entree.id }, props: { entree } }));
+}) satisfies GetStaticPaths;
+
+const { entree } = Astro.props;
+const { Content } = await render(entree);
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const dateLongue = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<Base titre={entree.data.titre} description={entree.data.resume}>
+  <nav class="retour"><a href={`${base}/journal`}>← Journal de bord</a></nav>
+
+  <article>
+    <h1>{entree.data.titre}</h1>
+    <p class="meta">
+      <time datetime={entree.data.date.toISOString().slice(0, 10)}>
+        {dateLongue.format(entree.data.date)}
+      </time>
+      {entree.data.lieu && <> · {entree.data.lieu}</>}
+      {entree.data.pratiques.length > 0 && <> · {entree.data.pratiques.join(', ')}</>}
+    </p>
+    <p class="resume">{entree.data.resume}</p>
+
+    <div class="corps">
+      <Content />
+    </div>
+  </article>
+
+  <p class="note differe">
+    Publié en différé. Cette entrée n'a paru qu'une fois l'étape suivant celle qu'elle raconte
+    quittée à son tour — le lieu était loin derrière au moment où vous l'avez lue.
+  </p>
+</Base>
+
+<style>
+  .retour { margin-bottom: 1.5rem; font-size: 0.9rem; }
+  article { max-width: 46rem; }
+  .meta { font-size: 0.85rem; color: var(--attenue); margin: 0.5rem 0 1.5rem; }
+  .resume { font-size: 1.1rem; color: var(--attenue); }
+  .corps { margin-top: 2rem; }
+  .corps :global(h2) { font-size: 1.15rem; }
+  .corps :global(img) { max-width: 100%; height: auto; }
+  .corps :global(blockquote) {
+    border-left: 3px solid var(--trait);
+    padding-left: 1rem;
+    margin-left: 0;
+    color: var(--attenue);
+  }
+  .differe { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--trait); }
+</style>

@@ -182,6 +182,9 @@ const charges = new Set([
   'budget-repartition.json', 'poids-categories.json', 'jalons.json',
   'configurations.json', 'regles-exploitation.json', 'energie-scenarios.json',
   'itineraire-public.geojson', 'corpus.json',
+  // Les entrées de journal ne sont pas un agrégat JSON mais un dossier de
+  // Markdown, consommé par la collection de contenu d'Astro.
+  'journal/',
 ]);
 const oublies = manifest.fichiers.filter((f) => !charges.has(f));
 if (oublies.length) {
