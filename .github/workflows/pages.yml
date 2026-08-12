@@ -64,7 +64,13 @@ jobs:
       - name: Vérifier le rendu
         run: node scripts/test-rendu.mjs
 
+      # `enablement` évite d'avoir à activer Pages à la main dans les réglages.
+      # Sur un compte gratuit, Pages ne fonctionne que pour un dépôt public :
+      # tant que celui-ci est privé, cette étape échoue — et c'est le seul point
+      # qui bloque la publication.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site/dist
