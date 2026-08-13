@@ -1,16 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
-import { vehicule, configurations, nombre } from '../lib/donnees';
+import { vehicule, configurations, nombre, metres } from '../lib/donnees';
 
 const d = vehicule.dimensions;
 const m = vehicule.masses;
 const c = vehicule.capacites;
 
 const fiche = [
-  ['Longueur hors tout', `${nombre(d.longueur_cm / 100)} m`],
-  ['Largeur', `${nombre(d.largeur_cm / 100)} m`],
-  ['Hauteur', `${nombre(d.hauteur_cm / 100)} m`],
-  ['Hauteur avec galerie et planche', `${nombre(d.hauteur_hors_tout_avec_galerie_et_planche_cm / 100)} m`],
+  ['Longueur hors tout', metres(d.longueur_cm)],
+  ['Largeur', metres(d.largeur_cm)],
+  ['Hauteur au catalogue', metres(d.hauteur_cm)],
+  // Le libellé ne mentionne plus la planche, retirée du projet. La cote, elle,
+  // reste : c'est l'enveloppe sur laquelle se calculent les gabarits tant que la
+  // galerie seule n'a pas été mesurée.
+  ['Hauteur retenue pour les gabarits', metres(d.hauteur_hors_tout_avec_galerie_et_planche_cm)],
   ['Hauteur intérieure', `${d.hauteur_interieure_cm} cm`],
   ['Empattement', `${nombre(d.empattement_mm / 1000)} m`],
   ['Châssis', vehicule.base.chassis],
@@ -72,6 +75,13 @@ const ecartes = [
     Données constructeur. La configuration commerciale, les options retenues et le prix ne sont pas
     publiés — ils relèvent du dossier privé.
   </p>
+
+  {vehicule._hauteur_note && (
+    <div class="constat">
+      <p><strong>La hauteur retenue n'est pas une mesure, c'est une enveloppe.</strong></p>
+      <p class="note">{vehicule._hauteur_note}</p>
+    </div>
+  )}
   <div class="defilable">
     <table>
       <tbody>

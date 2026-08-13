@@ -162,6 +162,21 @@ const energieSchema = z.object({
 const formateur = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 });
 export const nombre = (n: number) => formateur.format(n);
 
+/**
+ * Mesures en mètres : deux décimales, toujours.
+ *
+ * `nombre()` arrondit à une décimale, ce qui convient à des kilowattheures et
+ * pas du tout à un gabarit — 2,98 m s'affichait « 3 m », et 7,39 m « 7,4 m ».
+ * Sur une page dont l'objet est de savoir si le véhicule passe sous une barre,
+ * arrondir vers le haut une hauteur est le sens de l'erreur qu'il ne faut pas
+ * commettre. Le second chiffre n'est pas une précision cosmétique.
+ */
+const formateurMesure = new Intl.NumberFormat('fr-FR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+export const metres = (centimetres: number) => `${formateurMesure.format(centimetres / 100)} m`;
+
 /* ------------------------------------------------------------------ données */
 
 export const manifest = charger('_manifest.json', manifestSchema);
@@ -292,6 +307,10 @@ export const vehicule = charger('../vehicule-specs.json', z.object({
   modele: z.string(),
   statut_choix: z.string(),
   statut_note: z.string(),
+  // Volontairement à la racine et non dans `dimensions`, qui n'accepte que des
+  // nombres : la note dit pourquoi la hauteur hors tout reste une enveloppe de
+  // planification tant que la galerie seule n'est pas mesurée.
+  _hauteur_note: z.string().optional(),
   dimensions: z.record(z.string(), z.number()),
   base: z.object({ chassis: z.string(), puissance_ch: z.number(), puissance_kw: z.number(), norme: z.string() }),
   masses: z.object({ ptac_kg: z.number(), masse_ordre_marche_declaree_kg: z.number(), tolerance_legale_pct: z.number(), charge_soute_kg: z.number(), note: z.string() }),
