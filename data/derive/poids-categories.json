@@ -1,35 +1,33 @@
 {
   "_note": "Kilogrammes par catégorie, en état de réservoirs conforme aux règles d'exploitation. Le détail poste par poste reste privé : il décrit le contenu du véhicule.",
+  "_source": "Calculé depuis la nomenclature du matériel, article par article, un article partagé entre plusieurs activités n'étant compté qu'une fois.",
+  "_precision": "Kilogramme entier. Les sources sont plus précises ; publier « 33,711 kg » pour une catégorie restreindrait fortement les poids d'articles possibles, alors que l'agrégation existe pour ne pas les révéler.",
   "etat_reservoirs": "Conforme aux règles d'exploitation",
-  "total_kg": 843.6,
+  "total_kg": 827,
   "categories": [
     {
       "categorie": "energie",
       "kg": 189
     },
     {
-      "categorie": "vie_a_bord",
-      "kg": 159
+      "categorie": "mobilite",
+      "kg": 163
     },
     {
-      "categorie": "mobilite",
-      "kg": 156.6
+      "categorie": "vie_a_bord",
+      "kg": 159
     },
     {
       "categorie": "chiens",
       "kg": 73
     },
     {
-      "categorie": "sports",
-      "kg": 69
-    },
-    {
       "categorie": "eau",
       "kg": 60
     },
     {
-      "categorie": "production_images",
-      "kg": 39
+      "categorie": "sports",
+      "kg": 51
     },
     {
       "categorie": "arts",
@@ -38,6 +36,10 @@
     {
       "categorie": "structure",
       "kg": 35
+    },
+    {
+      "categorie": "production_images",
+      "kg": 34
     },
     {
       "categorie": "atelier",
