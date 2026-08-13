@@ -128,21 +128,32 @@ console.log(`Garde-fou sur l'historique — ${commits.length} commit(s).\n`);
 const aCorriger = [];
 const irreversibles = [];
 const assumees = [];
+const inspectionsRatees = [];
 
 for (const [i, sha] of commits.entries()) {
   const sujet = git('log', '-1', '--format=%s', sha).trim();
   const date = git('log', '-1', '--format=%ad', '--date=short', sha).trim();
   const public_ = dejaPousses.has(sha);
 
-  const dossier = mkdtempSync(join(tmpdir(), 'garde-fou-hist-'));
-  const archive = join(dossier, '.arbre.tar');
+  /* Extraction par `git worktree`, et non par `git archive | tar`.
+   *
+   * Le tar de Git Bash lit « C:\… » comme un hôte distant et refuse de
+   * l'atteindre. Le contrôle passait depuis PowerShell, où tar.exe est celui de
+   * Windows, et échouait depuis Bash — en rapportant « fuites à corriger » sur
+   * tous les commits, c'est-à-dire une alerte maximale pour un problème
+   * d'outillage. Un garde-fou qui crie au loup est un garde-fou qu'on désactive.
+   *
+   * git sait sortir un arbre tout seul. Une dépendance externe en moins, et le
+   * même comportement sous tous les interpréteurs.
+   */
+  const atelier = mkdtempSync(join(tmpdir(), 'garde-fou-hist-'));
+  const dossier = join(atelier, 'arbre');
   let etat = '·';
+  let arbreCree = false;
 
   try {
-    git('archive', '--format=tar', '-o', archive, sha);
-    const extraction = spawnSync('tar', ['-xf', archive, '-C', dossier], { encoding: 'utf8' });
-    if (extraction.status !== 0) throw new Error(`extraction : ${extraction.stderr?.trim()}`);
-    rmSync(archive, { force: true });
+    git('worktree', 'add', '--detach', '--quiet', dossier, sha);
+    arbreCree = true;
 
     // La liste d'empreintes du jour est injectée dans l'arbre ancien : ce qui est
     // privé aujourd'hui est recherché dans tout l'historique.
@@ -171,10 +182,15 @@ for (const [i, sha] of commits.entries()) {
       etat = aCorriger.some((c) => c.sha === sha) ? '✗' : '!';
     }
   } catch (e) {
+    // Une inspection impossible n'est pas une fuite. La confondre avec une fuite
+    // fait chercher une donnée là où il n'y a qu'un outil cassé.
     etat = '!';
-    aCorriger.push({ sha, sujet, date, regle: 'inspection', detail: e.message, extrait: '' });
+    inspectionsRatees.push({ sha, sujet, date, detail: e.message });
   } finally {
-    rmSync(dossier, { recursive: true, force: true });
+    if (arbreCree) {
+      try { git('worktree', 'remove', '--force', dossier); } catch { /* nettoyé ci-dessous */ }
+    }
+    rmSync(atelier, { recursive: true, force: true });
   }
 
   console.log(`  ${etat} ${sha.slice(0, 7)}  ${date}  ${public_ ? '' : '[local] '}${sujet.slice(0, 58)}`);
@@ -198,6 +214,22 @@ if (assumees.length) {
   for (const c of assumees) {
     console.log(`  ${c.sha.slice(0, 7)}  ${c.date}  ${c.fichier} [${c.regle}] ${c.extrait}`);
   }
+}
+
+/* Une inspection ratée se signale pour ce qu'elle est : un outil qui n'a pas
+ * tourné. Elle échoue quand même — on ne déclare pas propre ce qu'on n'a pas pu
+ * lire — mais elle ne se déguise pas en fuite.
+ */
+if (inspectionsRatees.length) {
+  console.error(`\n${inspectionsRatees.length} commit(s) n'ont pas pu être inspectés :\n`);
+  for (const c of inspectionsRatees) {
+    console.error(`  ${c.sha.slice(0, 7)}  ${c.date}  ${c.sujet}`);
+    console.error(`      ${c.detail}\n`);
+  }
+  console.error('Ce n\'est pas une fuite : c\'est un contrôle qui n\'a pas pu s\'exécuter.');
+  console.error('Rien n\'est déclaré propre pour autant — un arbre qu\'on ne sait pas lire');
+  console.error('n\'est pas un arbre vérifié.\n');
+  process.exit(1);
 }
 
 if (!aCorriger.length && !irreversibles.length) {
