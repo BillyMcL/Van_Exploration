@@ -5,57 +5,57 @@
     "acquisition": [
       {
         "categorie": "production_images",
-        "part_pct": 45.4
+        "part_pct": 44.7
       },
       {
         "categorie": "sports",
-        "part_pct": 26.7
-      },
-      {
-        "categorie": "equipement_personnel",
-        "part_pct": 12.2
+        "part_pct": 24
       },
       {
         "categorie": "mobilite",
-        "part_pct": 10.8
+        "part_pct": 14.5
+      },
+      {
+        "categorie": "equipement_personnel",
+        "part_pct": 12
       },
       {
         "categorie": "formation",
-        "part_pct": 4.9
+        "part_pct": 4.8
       }
     ],
     "fonctionnement": [
       {
         "categorie": "energie_carburant",
-        "part_pct": 22.1
+        "part_pct": 22.7
       },
       {
         "categorie": "vie_courante",
-        "part_pct": 19.5
+        "part_pct": 18.3
       },
       {
         "categorie": "hebergement_peages",
-        "part_pct": 17.4
+        "part_pct": 16.4
       },
       {
         "categorie": "assurances",
-        "part_pct": 15.2
+        "part_pct": 14.2
       },
       {
         "categorie": "vehicule_exploitation",
-        "part_pct": 9.2
+        "part_pct": 12.9
       },
       {
         "categorie": "provisions",
-        "part_pct": 7.4
+        "part_pct": 6.9
       },
       {
         "categorie": "chiens",
-        "part_pct": 4.6
+        "part_pct": 4.3
       },
       {
         "categorie": "telecom",
-        "part_pct": 1.8
+        "part_pct": 1.7
       },
       {
         "categorie": "production_images",
@@ -63,7 +63,7 @@
       },
       {
         "categorie": "sports",
-        "part_pct": 1.3
+        "part_pct": 1.2
       }
     ]
   }

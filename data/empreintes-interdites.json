@@ -7,7 +7,7 @@
   "algorithme": "HMAC-SHA256, tronqué à 16 caractères hexadécimaux",
   "controle": "cd73fd0a31653d15",
   "espaces": {
-    "monnaie": 48,
+    "monnaie": 50,
     "masse": 7,
     "jeton": 3
   },
@@ -18,6 +18,14 @@
   "seuils_note": "En dessous de ces magnitudes, une valeur est trop banale pour être distinguée du bruit : la contrôler produirait des faux positifs jusqu'à ce que le garde-fou soit désactivé. Ces petites valeurs restent couvertes par les règles structurelles.",
   "empreintes": [
     {
+      "e": "004cb579dbb8708a",
+      "depuis": "2026-08-13"
+    },
+    {
+      "e": "08ce9ab4e57351c4",
+      "depuis": "2026-08-13"
+    },
+    {
       "e": "09bfe34a862f65d2",
       "depuis": "2026-08-12"
     },
@@ -26,8 +34,16 @@
       "depuis": "2026-08-12"
     },
     {
+      "e": "0f1744e58d6ad01f",
+      "depuis": "2026-08-13"
+    },
+    {
       "e": "10b480e112503b97",
       "depuis": "2026-08-12"
+    },
+    {
+      "e": "121297adacb1bc4d",
+      "depuis": "2026-08-13"
     },
     {
       "e": "136c426c967942c7",
@@ -48,6 +64,10 @@
     {
       "e": "1ac1a330126ec8d6",
       "depuis": "2026-08-12"
+    },
+    {
+      "e": "1c3b942283873da8",
+      "depuis": "2026-08-13"
     },
     {
       "e": "1d8223a059d51e51",
@@ -79,6 +99,10 @@
       "depuis": "2026-08-12"
     },
     {
+      "e": "30e4005f8bb47abb",
+      "depuis": "2026-08-13"
+    },
+    {
       "e": "314d968d7b9d7b83",
       "depuis": "2026-08-12"
     },
@@ -91,8 +115,8 @@
       "depuis": "2026-08-12"
     },
     {
-      "e": "4e8e21567fc1048f",
-      "depuis": "2026-08-12"
+      "e": "4c60f20a6adf4d96",
+      "depuis": "2026-08-13"
     },
     {
       "e": "4fef82b24147b256",
@@ -109,14 +133,6 @@
     },
     {
       "e": "63162ebca7bb6b34",
-      "depuis": "2026-08-12"
-    },
-    {
-      "e": "63202de79e486877",
-      "depuis": "2026-08-12"
-    },
-    {
-      "e": "67607375f8538689",
       "depuis": "2026-08-12"
     },
     {
@@ -137,10 +153,6 @@
     },
     {
       "e": "81f09730cfda32e4",
-      "depuis": "2026-08-12"
-    },
-    {
-      "e": "82394fb7b58c970e",
       "depuis": "2026-08-12"
     },
     {
@@ -168,8 +180,16 @@
       "depuis": "2026-08-12"
     },
     {
+      "e": "991a9658b6bfee43",
+      "depuis": "2026-08-13"
+    },
+    {
+      "e": "9a19c07edafe0804",
+      "depuis": "2026-08-13"
+    },
+    {
       "e": "9f8646f14a19e257",
-      "depuis": "2026-08-12"
+      "depuis": "2026-08-13"
     },
     {
       "e": "a0907244c8cb8c4b",
@@ -196,12 +216,12 @@
       "depuis": "2026-08-12"
     },
     {
-      "e": "d203371053bf1bab",
+      "e": "d423edc2e8ffae88",
       "depuis": "2026-08-12"
     },
     {
-      "e": "d423edc2e8ffae88",
-      "depuis": "2026-08-12"
+      "e": "d6409232abfad4ee",
+      "depuis": "2026-08-13"
     },
     {
       "e": "d67a346e1fb02c9c",
@@ -209,14 +229,6 @@
     },
     {
       "e": "d8ce75a2cf284655",
-      "depuis": "2026-08-12"
-    },
-    {
-      "e": "e1a5f213f550ee3c",
-      "depuis": "2026-08-12"
-    },
-    {
-      "e": "e62dc6ecb6cc1a4d",
       "depuis": "2026-08-12"
     },
     {
@@ -233,10 +245,6 @@
     },
     {
       "e": "f045ce4f72f077b4",
-      "depuis": "2026-08-12"
-    },
-    {
-      "e": "f73979001ba1e47d",
       "depuis": "2026-08-12"
     },
     {

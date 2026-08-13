@@ -19,12 +19,25 @@ const autonomieJours = (deficit: number) =>
 const heuresDeRoute = (deficit: number) =>
   deficit >= 0 ? null : Math.ceil(Math.abs(deficit) / energie.kwh_par_heure_de_route);
 
+/**
+ * Ce que coûte vraiment l'astrophotographie dans le scénario contraignant.
+ *
+ * Le poste est retrouvé dans les données plutôt que nommé en dur : si l'export
+ * le renomme ou le retire, la page cesse d'afficher la comparaison au lieu de
+ * publier un chiffre qui ne correspond plus à rien.
+ */
+const astro = contraint.postes.find((p) => /astro/i.test(p.poste));
+const sansAstro = astro && {
+  max: +(contraint.deficitMax + astro.max).toFixed(1),
+  min: +(contraint.deficitMin + astro.min).toFixed(1),
+};
+
 const largeur = (v: number) => `${(v / echelle) * 100}%`;
 ---
 
 <Base
   titre="Énergie"
-  description="Le dimensionnement du système 24 V tient en été. La contrainte réelle est l'hiver ibérique, saison de départ et seule fenêtre d'astrophotographie."
+  description="Le dimensionnement du système 24 V tient en été. La contrainte réelle est l'hivernage — et ce n'est pas l'astrophotographie qui la crée."
 >
   <h1>La contrainte n'est pas l'été, c'est l'hiver</h1>
 
@@ -48,15 +61,18 @@ const largeur = (v: number) => `${(v / echelle) * 100}%`;
       après quoi il faut {heuresDeRoute(contraint.deficitMax)} heures de route par jour de
       stationnement — ou une prise.
     </p>
-    <p class="note">
-      C'est aussi la saison du départ, et la seule fenêtre d'astrophotographie du voyage :
-      les nuits blanches scandinaves rendent l'exercice impraticable en été. Le corpus
-      astronomique se produit donc exactement quand l'énergie est la plus rare, et chaque
-      session ajoute la monture, le boîtier et les résistances anti-buée à un bilan déjà
-      déficitaire. L'arbitrage reste ouvert : groupe électrogène d'appoint, nuits branchées
-      pendant les sessions, ou rythme de deux à trois nuits d'observation suivies d'une
-      journée de roulage.
-    </p>
+    {sansAstro && (
+      <p class="note">
+        C'est aussi la saison où se produit l'essentiel du corpus astronomique, et il a
+        longtemps semblé que les deux faits n'en faisaient qu'un. Le calcul dit le
+        contraire : <strong>en retirant intégralement l'astrophotographie du voyage</strong>,
+        le déficit passe de {nombre(Math.abs(contraint.deficitMin))}–{nombre(Math.abs(contraint.deficitMax))}
+        à {nombre(Math.abs(sansAstro.min))}–{nombre(Math.abs(sansAstro.max))} kWh par jour.
+        Il ne se déplace pas. Le déficit vient de l'hivernage, qu'impose la sensibilité à la
+        chaleur des occupants — l'observation nocturne n'en est pas la cause, elle en est la
+        voisine de calendrier.
+      </p>
+    )}
   </div>
 
   <h2>Consommation et production, par saison</h2>
@@ -108,9 +124,26 @@ const largeur = (v: number) => `${(v / echelle) * 100}%`;
     </section>
   ))}
 
-  <p class="note">
-    Une heure de route rend {nombre(energie.kwh_par_heure_de_route)} kWh par le chargeur d'alternateur.
-    C'est l'appoint qui porte l'hiver — pas le solaire.
+  <h2>Ce qui porte l'hiver</h2>
+  <p>
+    Une heure de route rend {nombre(energie.kwh_par_heure_de_route)} kWh par le chargeur
+    d'alternateur. Il en faudrait donc {heuresDeRoute(contraint.deficitMax)} par jour de
+    stationnement pour couvrir le pire cas. <strong>Ce n'est pas un appoint, c'est une
+    impossibilité</strong> : à ce rythme, le voyage consiste à conduire pour produire
+    l'électricité qui permet de s'arrêter.
+  </p>
+  <p>
+    Un groupe électrogène tiendrait le bilan, au prix d'un fonctionnement quotidien — bruit,
+    gazole, et une masse supplémentaire sur une charge utile déjà tenue par une clause
+    suspensive. Sur un site d'observation partagé, il est de toute façon inutilisable.
+  </p>
+  <p>
+    <strong>C'est donc le secteur qui porte l'hiver</strong>, sous forme de séjours branchés en
+    camping, négociés au mois hors saison. La géométrie s'inverse alors : le tampon de
+    {nombre(energie.capacite_utile_kwh)} kWh couvre largement une nuit d'observation, et le
+    véhicule n'a plus besoin de <em>dormir</em> au ciel noir — il a besoin d'y <em>être</em>,
+    quelques heures. Le site sombre devient un point de rayonnement nocturne, au même titre
+    qu'une piste pour la moto, et la base reste là où il y a une prise.
   </p>
 </Base>
 
