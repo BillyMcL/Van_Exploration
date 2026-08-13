@@ -16,20 +16,24 @@
       "kg": 154
     },
     {
-      "categorie": "production_images",
-      "kg": 81
-    },
-    {
       "categorie": "chiens",
       "kg": 73
+    },
+    {
+      "categorie": "sports",
+      "kg": 61
     },
     {
       "categorie": "eau",
       "kg": 60
     },
     {
-      "categorie": "sports",
-      "kg": 54
+      "categorie": "production_images",
+      "kg": 39
+    },
+    {
+      "categorie": "arts",
+      "kg": 35
     },
     {
       "categorie": "structure",
