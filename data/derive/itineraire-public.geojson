@@ -1,7 +1,1 @@
-{
-  "type": "FeatureCollection",
-  "_note": "Itinéraire en rétrospective. Ne figurent ici que des lieux déjà quittés. Ni tracé, ni ordre, ni date : les entités sont rangées alphabétiquement pour que la structure du fichier ne restitue pas la séquence que les attributs ne disent pas.",
-  "_regle": "Une entité entre dans ce fichier lorsque l'export constate qu'elle a été quittée. C'est une condition de programme, pas une discipline de rédaction.",
-  "_precision": "Coordonnées arrondies à 3 décimales, soit environ 100 m. Les emplacements de nuit ne figurent dans aucun fichier publié, sous aucune forme.",
-  "features": []
-}
+{"type":"FeatureCollection","_note":"Itinéraire en rétrospective. Ne figurent ici que des lieux déjà quittés. Ni tracé, ni ordre, ni date : les entités sont rangées alphabétiquement pour que la structure du fichier ne restitue pas la séquence que les attributs ne disent pas.","_regle":"Une entité entre dans ce fichier lorsque l'export constate qu'elle a été quittée. C'est une condition de programme, pas une discipline de rédaction.","_precision":"Coordonnées arrondies à 3 décimales, soit environ 100 m. Les emplacements de nuit ne figurent dans aucun fichier publié, sous aucune forme.","features":[]}
