@@ -126,7 +126,8 @@
     {
       "e": "4fef82b24147b256",
       "depuis": "2026-08-12",
-      "remanent": true
+      "remanent": true,
+      "assume": true
     },
     {
       "e": "514aba081f9d2d7a",
