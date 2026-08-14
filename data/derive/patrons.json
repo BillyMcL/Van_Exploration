@@ -8,7 +8,7 @@
       "duree_jours": 89,
       "destinations": 15,
       "km_route": 7865,
-      "km_moto": 520,
+      "km_moto": 513,
       "heures_conduite": 121,
       "traversees": 0,
       "saison_favorable": "mars – avril, septembre"
@@ -20,7 +20,7 @@
       "duree_jours": 90,
       "destinations": 15,
       "km_route": 4344,
-      "km_moto": 865,
+      "km_moto": 879,
       "heures_conduite": 67,
       "traversees": 2,
       "saison_favorable": "avril – août"
@@ -32,7 +32,7 @@
       "duree_jours": 85,
       "destinations": 14,
       "km_route": 3842,
-      "km_moto": 517,
+      "km_moto": 507,
       "heures_conduite": 59,
       "traversees": 0,
       "saison_favorable": "octobre – février"
@@ -44,7 +44,7 @@
       "duree_jours": 91,
       "destinations": 20,
       "km_route": 7093,
-      "km_moto": 639,
+      "km_moto": 634,
       "heures_conduite": 109,
       "traversees": 0,
       "saison_favorable": "septembre – mars"
@@ -56,7 +56,7 @@
       "duree_jours": 90,
       "destinations": 17,
       "km_route": 6720,
-      "km_moto": 637,
+      "km_moto": 669,
       "heures_conduite": 103,
       "traversees": 0,
       "saison_favorable": "février – avril"
@@ -68,7 +68,7 @@
       "duree_jours": 173,
       "destinations": 26,
       "km_route": 11095,
-      "km_moto": 1167,
+      "km_moto": 1109,
       "heures_conduite": 171,
       "traversees": 0,
       "saison_favorable": "mars"
@@ -80,7 +80,7 @@
       "duree_jours": 170,
       "destinations": 30,
       "km_route": 9778,
-      "km_moto": 1143,
+      "km_moto": 1156,
       "heures_conduite": 150,
       "traversees": 0,
       "saison_favorable": "octobre – décembre"
@@ -92,7 +92,7 @@
       "duree_jours": 182,
       "destinations": 25,
       "km_route": 6649,
-      "km_moto": 1498,
+      "km_moto": 1514,
       "heures_conduite": 102,
       "traversees": 5,
       "saison_favorable": "mars – mai"
@@ -104,7 +104,7 @@
       "duree_jours": 181,
       "destinations": 32,
       "km_route": 13610,
-      "km_moto": 1313,
+      "km_moto": 1310,
       "heures_conduite": 209,
       "traversees": 2,
       "saison_favorable": "février — au prix de 11 jours hors fenêtre (s6_grece)"
@@ -116,7 +116,7 @@
       "duree_jours": 180,
       "destinations": 34,
       "km_route": 15213,
-      "km_moto": 1246,
+      "km_moto": 1240,
       "heures_conduite": 234,
       "traversees": 1,
       "saison_favorable": "avril – juin"
@@ -128,7 +128,7 @@
       "duree_jours": 272,
       "destinations": 54,
       "km_route": 19422,
-      "km_moto": 2020,
+      "km_moto": 1976,
       "heures_conduite": 299,
       "traversees": 2,
       "saison_favorable": "octobre — au prix de 1 jours hors fenêtre (s4_italie)"
@@ -140,7 +140,7 @@
       "duree_jours": 261,
       "destinations": 39,
       "km_route": 20309,
-      "km_moto": 1670,
+      "km_moto": 1602,
       "heures_conduite": 312,
       "traversees": 1,
       "saison_favorable": "février — au prix de 15 jours hors fenêtre (s5_adriatique)"
@@ -152,7 +152,7 @@
       "duree_jours": 273,
       "destinations": 51,
       "km_route": 20437,
-      "km_moto": 2079,
+      "km_moto": 2099,
       "heures_conduite": 314,
       "traversees": 6,
       "saison_favorable": "avril — au prix de 37 jours hors fenêtre (s10_iles)"
@@ -164,7 +164,7 @@
       "duree_jours": 360,
       "destinations": 59,
       "km_route": 21204,
-      "km_moto": 2458,
+      "km_moto": 2453,
       "heures_conduite": 326,
       "traversees": 2,
       "saison_favorable": "septembre — au prix de 20 jours hors fenêtre (s4_italie)"
@@ -176,7 +176,7 @@
       "duree_jours": 365,
       "destinations": 57,
       "km_route": 23604,
-      "km_moto": 2479,
+      "km_moto": 2405,
       "heures_conduite": 363,
       "traversees": 1,
       "saison_favorable": "janvier — au prix de 44 jours hors fenêtre (s5_adriatique)"
@@ -188,7 +188,7 @@
       "duree_jours": 361,
       "destinations": 54,
       "km_route": 17702,
-      "km_moto": 2678,
+      "km_moto": 2690,
       "heures_conduite": 272,
       "traversees": 5,
       "saison_favorable": "novembre"
@@ -200,7 +200,7 @@
       "duree_jours": 451,
       "destinations": 96,
       "km_route": 34999,
-      "km_moto": 3340,
+      "km_moto": 3257,
       "heures_conduite": 538,
       "traversees": 3,
       "saison_favorable": "octobre — au prix de 36 jours hors fenêtre (s4_italie)"
@@ -212,7 +212,7 @@
       "duree_jours": 455,
       "destinations": 76,
       "km_route": 27746,
-      "km_moto": 3093,
+      "km_moto": 3071,
       "heures_conduite": 427,
       "traversees": 3,
       "saison_favorable": "octobre — au prix de 3 jours hors fenêtre (s9_continent)"
@@ -224,7 +224,7 @@
       "duree_jours": 452,
       "destinations": 73,
       "km_route": 29525,
-      "km_moto": 3022,
+      "km_moto": 2978,
       "heures_conduite": 454,
       "traversees": 3,
       "saison_favorable": "septembre — au prix de 26 jours hors fenêtre (s4_italie)"
@@ -236,7 +236,7 @@
       "duree_jours": 547,
       "destinations": 100,
       "km_route": 35720,
-      "km_moto": 4283,
+      "km_moto": 4225,
       "heures_conduite": 550,
       "traversees": 8,
       "saison_favorable": "février — au prix de 97 jours hors fenêtre (s8_nordique)"
@@ -248,7 +248,7 @@
       "duree_jours": 541,
       "destinations": 101,
       "km_route": 33119,
-      "km_moto": 4262,
+      "km_moto": 4206,
       "heures_conduite": 510,
       "traversees": 8,
       "saison_favorable": "novembre — au prix de 94 jours hors fenêtre (s10_iles)"
@@ -260,7 +260,7 @@
       "duree_jours": 636,
       "destinations": 111,
       "km_route": 40318,
-      "km_moto": 4893,
+      "km_moto": 4837,
       "heures_conduite": 620,
       "traversees": 7,
       "saison_favorable": "décembre — au prix de 106 jours hors fenêtre (s8_nordique)"
@@ -272,7 +272,7 @@
       "duree_jours": 637,
       "destinations": 108,
       "km_route": 38735,
-      "km_moto": 4801,
+      "km_moto": 4795,
       "heures_conduite": 596,
       "traversees": 8,
       "saison_favorable": "décembre — au prix de 108 jours hors fenêtre (s8_nordique)"
@@ -284,7 +284,7 @@
       "duree_jours": 727,
       "destinations": 113,
       "km_route": 40224,
-      "km_moto": 5218,
+      "km_moto": 5194,
       "heures_conduite": 619,
       "traversees": 8,
       "saison_favorable": "octobre — au prix de 101 jours hors fenêtre (s8_nordique)"
@@ -296,7 +296,7 @@
       "duree_jours": 730,
       "destinations": 113,
       "km_route": 40224,
-      "km_moto": 5341,
+      "km_moto": 5318,
       "heures_conduite": 619,
       "traversees": 8,
       "saison_favorable": "octobre — au prix de 104 jours hors fenêtre (s8_nordique)"
