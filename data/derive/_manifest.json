@@ -1,7 +1,7 @@
 {
   "_avertissement": "Fichiers générés par export/export.mjs depuis le dépôt privé. Ne pas éditer à la main : la prochaine exécution écrasera toute modification, et une valeur saisie ici ne serait plus tracée à sa source.",
   "version_contrat": 2,
-  "empreinte_sources": "f2512bf33ae1d6e2",
+  "empreinte_sources": "84ebfb0a658b9e80",
   "fichiers": [
     "budget-repartition.json",
     "configurations.json",
