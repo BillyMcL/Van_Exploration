@@ -1,6 +1,6 @@
 {
   "_note": "Spécifications génériques, relevées au catalogue constructeur. Ce fichier est saisi directement dans le dépôt public : il ne dérive d'aucune donnée privée et ne contient ni configuration commerciale, ni prix, ni option retenue.",
-  "_hauteur_note": "La hauteur catalogue est 298 cm (confirmée par le document de configuration). Le 325 cm hors tout datait de la galerie AVEC la planche de surf ; la planche est retirée du projet, et la hauteur réelle galerie seule n'est pas encore mesurée. 325 cm reste donc l'ENVELOPPE DE PLANIFICATION — gabarits, barres, tranches de ferry se calculent dessus — jusqu'à la mesure du fabricant de galerie : on ne descend pas un verdict de gabarit sur une hauteur non mesurée.",
+  "_hauteur_note": "La hauteur catalogue est 298 cm (document de configuration). LA GALERIE DE TOIT EST ABANDONNÉE avec la planche de surf (D-50, qui rouvre D-05) : l'astrophotographie se fait au trépied, au sol, à côté du véhicule — un trépied posé sur terre est plus stable que n'importe quelle plateforme sur un châssis suspendu. La hauteur de travail est donc 298 cm plus la pose des panneaux solaires, ESTIMÉE entre 301 et 308 cm (retenue 305) en attendant le devis de pose (T-06) et la mesure réelle (T-31). Les verdicts de gabarit se calculent sur le HAUT de la fourchette, 308 cm. L'ancienne enveloppe de 325 cm (galerie + planche) est conservée pour mémoire dans hauteur_hors_tout_avec_galerie_et_planche_cm ; elle ne pilote plus rien.",
   "modele": "Hymer B-MC T 680",
   "statut_choix": "provisoire",
   "statut_note": "Le choix du véhicule reste suspendu à un essai physique de chargement de la moto. Tant que cet essai n'a pas eu lieu, ce dépôt ne présente pas ce modèle comme arrêté.",
@@ -12,7 +12,9 @@
     "hauteur_interieure_cm": 198,
     "largeur_caisse_cm": 219,
     "largeur_interieure_cm": 212,
-    "empattement_mm": 4200
+    "empattement_mm": 4200,
+    "hauteur_hors_tout_estimee_cm": 305,
+    "hauteur_hors_tout_estimee_max_cm": 308
   },
   "base": {
     "chassis": "Mercedes-Benz Sprinter 4,43 t",
