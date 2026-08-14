@@ -3,7 +3,7 @@
   "_source": "Calculé depuis la nomenclature du matériel, article par article, un article partagé entre plusieurs activités n'étant compté qu'une fois.",
   "_precision": "Kilogramme entier. Les sources sont plus précises ; publier « 33,711 kg » pour une catégorie restreindrait fortement les poids d'articles possibles, alors que l'agrégation existe pour ne pas les révéler.",
   "etat_reservoirs": "Conforme aux règles d'exploitation",
-  "total_kg": 827,
+  "total_kg": 826,
   "categories": [
     {
       "categorie": "energie",
@@ -39,7 +39,7 @@
     },
     {
       "categorie": "production_images",
-      "kg": 34
+      "kg": 33
     },
     {
       "categorie": "atelier",
