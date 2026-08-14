@@ -395,7 +395,26 @@ const CLES_DATE = /(^|_)(date|dates|jour|heure|horaire|timestamp|debut|fin|depar
 const CLES_ORDRE = /(^|_)(ordre|order|sequence|seq|rang|rank|index|etape|step|numero|num|position|suivant|suivante|prochain|prochaine)($|_)/i;
 const VALEUR_DATE = /\b\d{4}-\d{2}-\d{2}\b/;
 
+/**
+ * Le seul fichier autorisé à porter un ordre — et rien d'autre.
+ *
+ * Un patron est un parcours POSSIBLE. Son tracé porte une séquence, c'est son
+ * objet même. Vingt-cinq séquences alternatives ne disent ni laquelle sera
+ * suivie, ni quand : le renseignement que la règle protège — où sera le véhicule
+ * — n'y est pas.
+ *
+ * L'AUTORISATION EST ÉTROITE, ET C'EST VOULU
+ * Elle ne vaut que pour ce nom de fichier, et seulement pour l'ordre. Les dates
+ * y restent refusées, les coordonnées trop précises aussi, et la même géométrie
+ * dans le fichier de l'itinéraire réel reste refusée. Conformément à la règle de
+ * modification en tête de ce fichier, l'exception arrive avec le test qui prouve
+ * qu'elle ne défait rien : voir scripts/test-garde-fou.mjs.
+ */
+const ORDRE_AUTORISE = /^patrons\.geojson$/i;
+
 function controlerGeojsonSequence(rel, texte) {
+  const nom = rel.split(/[\\/]/).pop();
+  const ordreAdmis = ORDRE_AUTORISE.test(nom);
   let arbre;
   try {
     arbre = JSON.parse(texte);
@@ -417,7 +436,10 @@ function controlerGeojsonSequence(rel, texte) {
       return;
     }
     for (const [cle, valeur] of Object.entries(noeud)) {
-      const type = CLES_DATE.test(cle) ? 'date' : CLES_ORDRE.test(cle) ? 'ordre' : null;
+      let type = CLES_DATE.test(cle) ? 'date' : CLES_ORDRE.test(cle) ? 'ordre' : null;
+      // L'autorisation ne couvre que l'ordre. Une date dans un patron reste une
+      // fuite : elle transformerait une possibilité en rendez-vous.
+      if (type === 'ordre' && ordreAdmis) type = null;
       if (type && !vu.has(cle)) {
         vu.add(cle);
         signaler(rel, 'geojson-sequence',

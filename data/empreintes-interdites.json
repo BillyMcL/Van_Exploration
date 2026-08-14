@@ -9,7 +9,7 @@
   "controle": "cd73fd0a31653d15",
   "espaces": {
     "monnaie": 34,
-    "masse": 8,
+    "masse": 7,
     "jeton": 3
   },
   "seuils": {
@@ -224,10 +224,6 @@
       "remanent": true
     },
     {
-      "e": "b45d9d73fe0d0dc2",
-      "depuis": "2026-08-13"
-    },
-    {
       "e": "c92f78c6d9800082",
       "depuis": "2026-08-12"
     },
@@ -276,11 +272,6 @@
     {
       "e": "f45f652a9e99787b",
       "depuis": "2026-08-13"
-    },
-    {
-      "e": "f85ed7821b0fe24b",
-      "depuis": "2026-08-12",
-      "remanent": true
     },
     {
       "e": "f91b95aff856e8a3",

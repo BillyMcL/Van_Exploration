@@ -258,6 +258,16 @@ writeFileSync(join(propre, 'data', 'itineraire-public.geojson'), JSON.stringify(
     geometry: { type: 'Point', coordinates: [-1.452, 43.483] },
   }],
 }, null, 2), 'utf8');
+// Les patrons ont le droit de porter un ordre : leur tracé EST une séquence, et
+// vingt-cinq séquences alternatives ne disent pas où sera le véhicule.
+writeFileSync(join(propre, 'data', 'patrons.geojson'), JSON.stringify({
+  type: 'FeatureCollection',
+  features: [{
+    type: 'Feature',
+    properties: { id: 't3_iberie', titre: 'Trois mois', duree_jours: 91, destinations: 20 },
+    geometry: { type: 'LineString', coordinates: [[-1.452, 43.483], [-8.611, 41.149]] },
+  }],
+}, null, 2), 'utf8');
 writeFileSync(join(propre, 'media', 'astro', 'voie-lactee.jpg'), jpegPropre());
 
 const r2 = lancerGardeFou(propre);
@@ -270,6 +280,51 @@ if (r2.status === 0) {
 }
 
 rmSync(propre, { recursive: true, force: true });
+
+/* ------------------------------- l'exception des patrons ne défait rien
+ *
+ * L'autorisation d'ordre accordée à `patrons.geojson` est étroite par
+ * construction. Ces trois cas le prouvent, faute de quoi elle deviendrait une
+ * dispense générale : c'est exactement ce qui est arrivé aux exceptions
+ * précédentes de ce garde-fou.
+ */
+
+console.log('\nExceptions des patrons — l\'autorisation reste étroite :\n');
+
+const cas = (nom, fichier, proprietes, coordonnees = [[-1.452, 43.483], [-8.611, 41.149]]) => {
+  const dossier = mkdtempSync(join(tmpdir(), 'garde-fou-patron-'));
+  mkdirSync(join(dossier, 'data'), { recursive: true });
+  writeFileSync(join(dossier, 'data', fichier), JSON.stringify({
+    type: 'FeatureCollection',
+    features: [{ type: 'Feature', properties: proprietes, geometry: { type: 'LineString', coordinates: coordonnees } }],
+  }, null, 2), 'utf8');
+  const r = lancerGardeFou(dossier);
+  rmSync(dossier, { recursive: true, force: true });
+  return { nom, sortie: r.stdout + r.stderr, code: r.status };
+};
+
+const attendu = (r, doitMordre, regle, libelle) => {
+  const mord = r.sortie.includes(`[${regle}]`);
+  const ok = mord === doitMordre;
+  console.log(`  ${ok ? '✓' : '✗'}  ${libelle}`);
+  if (!ok) { console.log(`      sortie :\n${r.sortie}`); echecs++; }
+};
+
+attendu(cas('ordre admis', 'patrons.geojson', { id: 't3', ordre: 3, etape: 2 }),
+  false, 'geojson-sequence',
+  'un patron peut porter un ordre — c\'est l\'objet de son tracé');
+
+attendu(cas('date refusée', 'patrons.geojson', { id: 't3', date_depart: '2027-01-14' }),
+  true, 'geojson-sequence',
+  'mais pas une date : elle changerait la possibilité en rendez-vous');
+
+attendu(cas('coordonnées', 'patrons.geojson', { id: 't3' }, [[-1.4521837, 43.4832916]]),
+  true, 'coordonnees-trop-precises',
+  'ni des coordonnées au-delà de trois décimales');
+
+attendu(cas('autre fichier', 'itineraire-public.geojson', { id: 't3', ordre: 3 }),
+  true, 'geojson-sequence',
+  'et le même ordre dans l\'itinéraire réel reste refusé');
 
 /* ------------------------------------------------------------------ verdict */
 

@@ -1,0 +1,171 @@
+---
+/**
+ * Les expéditions possibles, et la carte des lieux qui les composent.
+ *
+ * CE QUE CETTE PAGE PUBLIE, ET POURQUOI ELLE LE PEUT
+ * Vingt-cinq parcours modèles, tracés. Un tracé porte un ordre — c'est l'objet
+ * d'un patron. Ce que la règle du décalage d'étape protège, c'est la position
+ * FUTURE du véhicule : vingt-cinq ordres alternatifs, sans année ni date et sans
+ * qu'aucun soit retenu, ne la donnent pas.
+ *
+ * Ce qui reste absent : les haltes, les services, les stationnements, l'ordre
+ * saisonnier des destinations, et le patron effectivement suivi. La page
+ * d'itinéraire, elle, reste rétrospective.
+ */
+import Base from '../layouts/Base.astro';
+import { patrons, pointsInteret, patronsTraces, nombre } from '../lib/donnees';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const familles = [...new Set(patrons.patrons.map((p) => p.duree_mois))]
+  .sort((a, b) => a - b)
+  .map((mois) => ({ mois, liste: patrons.patrons.filter((p) => p.duree_mois === mois) }));
+
+const points = pointsInteret.features.map((f) => ({
+  nom: f.properties.nom,
+  type: f.properties.type,
+  pays: f.properties.pays,
+  pratiques: f.properties.pratiques ?? [],
+  coord: f.geometry.coordinates,
+}));
+
+const traces = patronsTraces.features.map((f) => ({
+  id: f.properties.id,
+  titre: f.properties.titre,
+  coord: f.geometry.coordinates,
+}));
+
+const parType = ['interet', 'site', 'ancrage', 'transit'].map((t) => ({
+  type: t,
+  n: points.filter((p) => p.type === t).length,
+}));
+
+const NOMS_TYPE: Record<string, string> = {
+  interet: 'Points d\'intérêt',
+  site: 'Sites majeurs',
+  ancrage: 'Destinations',
+  transit: 'Passages',
+};
+---
+
+<Base titre="Expéditions">
+  <h1>Vingt-cinq expéditions possibles</h1>
+
+  <p class="chapeau">
+    Le projet n'est pas un voyage de deux ans mais une suite d'expéditions, chacune partant de
+    Paris et y revenant. Elles se composent depuis un vivier de {nombre(points.length)} lieux
+    recensés. Une durée n'est pas une troncature : chaque famille propose des régions différentes,
+    pas le même voyage coupé plus court.
+  </p>
+
+  <p class="note">
+    <strong>Aucune de ces expéditions n'est retenue, et aucune date n'est publiée.</strong>
+    Les tracés montrent des parcours possibles. La saison indiquée décrit une contrainte
+    climatique du parcours — la neige, la chaleur, la lumière — pas un départ.
+    L'<a href={`${base}/itineraire`}>itinéraire réellement suivi</a> ne se publie qu'en
+    rétrospective, sans ordre ni calendrier.
+  </p>
+
+  <figure class="carte">
+    <div id="carte" role="img" aria-label={`Carte de ${points.length} lieux et de ${traces.length} parcours possibles`}></div>
+    <figcaption>
+      {nombre(points.length)} lieux et {traces.length} parcours possibles. Coordonnées arrondies à
+      trois décimales, soit une centaine de mètres : assez pour situer un sujet, pas pour retrouver
+      un emplacement. Les haltes, les services et les stationnements n'y figurent pas.
+    </figcaption>
+  </figure>
+
+  <script type="application/json" id="donnees-carte" set:html={JSON.stringify({ points, traces })}></script>
+
+  <ul class="compte">
+    {parType.map((t) => <li><strong>{nombre(t.n)}</strong> {NOMS_TYPE[t.type]}</li>)}
+  </ul>
+
+  {familles.map((f) => (
+    <>
+      <h2>{f.mois >= 24 ? 'Deux ans et plus' : `${f.mois} mois`}</h2>
+      <div class="defilable">
+        <table>
+          <thead>
+            <tr>
+              <th>Expédition</th><th class="num">Destinations</th><th class="num">km</th>
+              <th class="num">Conduite</th><th class="num">km moto</th>
+              <th class="num">Jours</th><th class="num">Traversées</th><th>Saison favorable</th>
+            </tr>
+          </thead>
+          <tbody>
+            {f.liste.map((p) => (
+              <tr>
+                <td>{p.titre}</td>
+                <td class="num">{p.destinations}</td>
+                <td class="num">{nombre(p.km_route)}</td>
+                <td class="num">{nombre(p.heures_conduite)} h</td>
+                <td class="num">{nombre(p.km_moto)}</td>
+                <td class="num">{p.duree_jours}</td>
+                <td class="num">{p.traversees || '—'}</td>
+                <td class="saison">{p.saison_favorable || '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  ))}
+
+  <noscript>
+    <p class="note">La carte demande JavaScript. Le tableau ci-dessus reste complet sans lui.</p>
+  </noscript>
+
+  <script>
+    import L from 'leaflet';
+    import 'leaflet/dist/leaflet.css';
+
+    const conteneur = document.getElementById('carte');
+    const brut = document.getElementById('donnees-carte')?.textContent;
+    if (conteneur && brut) {
+      const { points, traces } = JSON.parse(brut);
+      const carte = L.map(conteneur, { scrollWheelZoom: false });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap',
+        maxZoom: 12,
+      }).addTo(carte);
+
+      // Rendu canvas : huit cents marqueurs en SVG font ramer un téléphone.
+      const rendu = L.canvas({ padding: 0.5 });
+      const COULEURS: Record<string, string> = {
+        interet: '#6b7a8f', site: '#b4654a', ancrage: '#2f4858', transit: '#9aa5b1',
+      };
+
+      for (const p of points) {
+        L.circleMarker([p.coord[1], p.coord[0]], {
+          renderer: rendu, radius: p.type === 'site' ? 5 : 3,
+          color: COULEURS[p.type] ?? '#888', weight: 1, fillOpacity: 0.6,
+        }).bindPopup(`<strong>${p.nom}</strong><br>${p.pays}${
+          p.pratiques.length ? `<br>${p.pratiques.join(', ')}` : ''}`).addTo(carte);
+      }
+
+      const couches = traces.map((t: any) =>
+        L.polyline(t.coord.map((c: number[]) => [c[1], c[0]]), {
+          renderer: rendu, color: '#b4654a', weight: 1.5, opacity: 0.25,
+        }).bindPopup(`<strong>${t.titre}</strong>`));
+
+      const groupe = L.layerGroup(couches);
+      L.control.layers(undefined, { [`${traces.length} parcours possibles`]: groupe },
+        { collapsed: false }).addTo(carte);
+
+      const tout = L.featureGroup(points.map((p: any) => L.marker([p.coord[1], p.coord[0]])));
+      carte.fitBounds(tout.getBounds(), { padding: [20, 20] });
+    }
+  </script>
+
+  <style>
+    .chapeau { max-width: 62ch; }
+    .carte { margin: 1.5rem 0; }
+    #carte { height: min(70vh, 34rem); width: 100%; background: #eee; }
+    figcaption { font-size: 0.82rem; color: var(--attenue); margin-top: 0.5rem; max-width: 62ch; }
+    .compte { display: flex; flex-wrap: wrap; gap: 1.5rem; list-style: none; padding: 0; margin: 0 0 1.5rem; font-size: 0.9rem; }
+    .saison { font-size: 0.85em; color: var(--attenue); }
+    td.num, th.num { text-align: right; }
+  </style>
+</Base>

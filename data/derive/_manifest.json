@@ -10,7 +10,10 @@
     "itineraire-public.geojson",
     "jalons.json",
     "journal/",
+    "patrons.geojson",
+    "patrons.json",
     "poids-categories.json",
+    "points-interet.geojson",
     "regles-exploitation.json"
   ],
   "journal": {

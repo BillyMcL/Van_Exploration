@@ -197,6 +197,7 @@ const charges = new Set([
   'budget-repartition.json', 'poids-categories.json', 'jalons.json',
   'configurations.json', 'regles-exploitation.json', 'energie-scenarios.json',
   'itineraire-public.geojson', 'corpus.json',
+  'points-interet.geojson', 'patrons.geojson', 'patrons.json',
   // Les entrées de journal ne sont pas un agrégat JSON mais un dossier de
   // Markdown, consommé par la collection de contenu d'Astro.
   'journal/',
@@ -375,3 +376,88 @@ export const projet = charger('../projet.json', projetSchema);
     );
   }
 }
+
+/* ------------------------------------------- points d'intérêt et patrons
+ *
+ * Le vivier de destinations et les points d'intérêt décrivent un projet ; les
+ * vingt-cinq patrons décrivent des parcours possibles. Ni l'un ni l'autre ne dit
+ * où sera le véhicule — c'est ce qui les sépare de `itineraire-public.geojson`,
+ * qui reste rétrospectif et n'admet que des Point.
+ *
+ * Les schémas sont `strict()` : une propriété que l'export ajouterait sans qu'on
+ * l'ait voulue casse la construction du site plutôt que de partir en ligne. Le
+ * garde-fou contrôle ce qui ressemble à une fuite ; celui-ci contrôle ce qui
+ * n'était pas prévu, ce qui n'est pas la même question.
+ */
+
+const pointsInteretSchema = z.object({
+  type: z.literal('FeatureCollection'),
+  _note: z.string(),
+  _tri: z.string(),
+  features: z.array(z.object({
+    type: z.literal('Feature'),
+    properties: z.object({
+      id: z.string().min(1),
+      nom: z.string().min(1),
+      type: z.enum(['interet', 'site', 'ancrage', 'transit']),
+      pays: z.string().min(2).max(3),
+      natures: z.array(z.string()).optional(),
+      pratiques: z.array(z.string()).optional(),
+      drone: z.string().optional(),
+    }).strict(),
+    geometry: z.object({
+      type: z.literal('Point', {
+        errorMap: () => ({ message: 'seules des géométries Point sont admises ici — une LineString serait un ordre de passage' }),
+      }),
+      coordinates: z.tuple([z.number(), z.number()]),
+    }),
+  })),
+});
+
+const patronsGeoSchema = z.object({
+  type: z.literal('FeatureCollection'),
+  _note: z.string(),
+  _saison: z.string(),
+  features: z.array(z.object({
+    type: z.literal('Feature'),
+    properties: z.object({
+      id: z.string().min(1),
+      titre: z.string().min(1),
+      duree_mois: z.number(),
+      duree_jours: z.number(),
+      destinations: z.number(),
+      km_route: z.number(),
+      km_moto: z.number(),
+      heures_conduite: z.number(),
+      traversees: z.number(),
+      traversees_nommees: z.array(z.string()),
+      saison_favorable: z.string(),
+    }).strict(),
+    // LineString ASSUMÉE : le tracé d'un patron est une séquence, et c'est son
+    // objet. Vingt-cinq séquences alternatives ne disent pas laquelle sera suivie.
+    geometry: z.object({
+      type: z.literal('LineString'),
+      coordinates: z.array(z.tuple([z.number(), z.number()])),
+    }),
+  })),
+});
+
+const patronsSchema = z.object({
+  _note: z.string(),
+  patrons: z.array(z.object({
+    id: z.string().min(1),
+    titre: z.string().min(1),
+    duree_mois: z.number(),
+    duree_jours: z.number(),
+    destinations: z.number(),
+    km_route: z.number(),
+    km_moto: z.number(),
+    heures_conduite: z.number(),
+    traversees: z.number(),
+    saison_favorable: z.string(),
+  }).strict()),
+});
+
+export const pointsInteret = charger('points-interet.geojson', pointsInteretSchema);
+export const patronsTraces = charger('patrons.geojson', patronsGeoSchema);
+export const patrons = charger('patrons.json', patronsSchema);
