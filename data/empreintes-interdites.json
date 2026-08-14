@@ -8,7 +8,7 @@
   "algorithme": "HMAC-SHA256, tronqué à 16 caractères hexadécimaux",
   "controle": "cd73fd0a31653d15",
   "espaces": {
-    "monnaie": 35,
+    "monnaie": 34,
     "masse": 7,
     "jeton": 3
   },
@@ -221,7 +221,8 @@
     },
     {
       "e": "a5d5b00ca70fabe4",
-      "depuis": "2026-08-14"
+      "depuis": "2026-08-14",
+      "remanent": true
     },
     {
       "e": "a771b868b0ae3ef9",
@@ -264,11 +265,6 @@
     {
       "e": "e1a5f213f550ee3c",
       "depuis": "2026-08-13"
-    },
-    {
-      "e": "e81bebc31a372035",
-      "depuis": "2026-08-12",
-      "remanent": true
     },
     {
       "e": "e92a6dfa142d414e",
